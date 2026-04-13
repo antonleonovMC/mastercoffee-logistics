@@ -1,18 +1,74 @@
-function closeModal(event) {
-  // Проверяем, был ли клик по самому overlay (не по modal)
-  if (event && event.target !== document.getElementById('modalOverlay')) {
-    return;
-  }
+<!DOCTYPE html> 
+<html lang="en">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>Master Coffee Logistics</title>
+    <link rel="stylesheet" href="styles.css">
+    <script src="script.js" defer></script>
+</head>
+<body>
+    <header>
+        <h1>Welcome to Master Coffee Logistics</h1>
+    </header>
+    <main>
+        <section id="products">
+            <!-- Dynamic product list will be generated here -->
+        </section>
+        <button id="openModal">Open Modal</button>
+        <div id="modal" class="hidden">
+            <div class="modal-content">
+                <span class="close">&times;</span>
+                <p>Some dynamic content here!</p>
+            </div>
+        </div>
+    </main>
+    <footer>
+        <p>&copy; 2026 Master Coffee. All rights reserved.</p>
+    </footer>
+    <script>
+        // Optimized swipe functionality
+        let startX;
+        let endX;
+        const swipeThreshold = 50;
 
-  const modal = document.getElementById('modal');
-  const overlay = document.getElementById('modalOverlay');
-  
-  // Добавляем класс для анимации свайпа
-  modal.classList.add('closing');
-  
-  // Ждем завершения анимации, затем закрываем
-  setTimeout(() => {
-    modal.classList.remove('closing');
-    overlay.classList.remove('open');
-  }, 350); // соответствует длительности анимации (0.35s)
-}
+        document.addEventListener('touchstart', (e) => {
+            startX = e.touches[0].clientX;
+        });
+
+        document.addEventListener('touchend', (e) => {
+            endX = e.changedTouches[0].clientX;
+            handleSwipe();
+        });
+
+        function handleSwipe() {
+            if (startX - endX > swipeThreshold) {
+                console.log('Swiped Left');
+            } else if (endX - startX > swipeThreshold) {
+                console.log('Swiped Right');
+            }
+        }
+
+        // Fast response modal system
+        const modal = document.getElementById('modal');
+        const openModalButton = document.getElementById('openModal');
+        const closeModalButton = modal.querySelector('.close');
+
+        openModalButton.addEventListener('click', () => {
+            modal.classList.remove('hidden');
+        });
+
+        closeModalButton.addEventListener('click', () => {
+            modal.classList.add('hidden');
+        });
+
+        // Dynamic data updates (mockup)
+        function updateProducts() {
+            const productsSection = document.getElementById('products');
+            productsSection.innerHTML = '<p>Product List Updated!</p>';
+        }
+
+        // CSS animations (add your animations here)
+    </script>
+</body>
+</html>
