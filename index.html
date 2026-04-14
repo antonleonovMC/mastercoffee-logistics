@@ -69,21 +69,35 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 .fil-w{padding:15px 16px 6px}
 .fil-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txm);margin-bottom:9px}
 .fil-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-.fil-btn{display:flex;align-items:center;gap:5px;background:var(--sur);border:1.5px solid var(--bd);border-radius:9px;padding:8px 9px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:11px;font-weight:600;color:var(--txs);transition:background .15s,border-color .15s,color .15s;white-space:nowrap;overflow:hidden}
+.fil-btn{display:flex;align-items:center;gap:5px;background:var(--sur);border:1.5px solid var(--bd);border-radius:9px;padding:8px 9px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:11px;font-weight:600;color:var(--txs);transition:background .15s,border-color .15s,color .15s;white-space:nowrap;overflow:hidden;position:relative}
 .fil-btn .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+/* Счётчик на кнопке */
+.fil-btn .fil-count{margin-left:auto;font-size:10px;font-weight:700;background:var(--sur2);color:var(--txm);border-radius:20px;padding:1px 6px;flex-shrink:0;transition:background .15s,color .15s;min-width:18px;text-align:center}
 .fil-btn.active{border-color:var(--btn-color);background:color-mix(in srgb,var(--btn-color) 10%,#fff);color:var(--btn-color)}
+.fil-btn.active .fil-count{background:color-mix(in srgb,var(--btn-color) 18%,#fff);color:var(--btn-color)}
+/* Кнопка "Доставлен" — выделена визуально как архивная */
+.s-done-note{font-size:9.5px;color:var(--txm);text-align:center;margin-top:5px;font-weight:500;letter-spacing:.01em}
+
 .s-accepted{--btn-color:#2da87a}.s-accepted .dot{background:#2da87a}
 .s-working {--btn-color:#297b89}.s-working  .dot{background:#297b89}
 .s-paid    {--btn-color:#6c63ff}.s-paid     .dot{background:#6c63ff}
 .s-transit {--btn-color:#e8a020}.s-transit  .dot{background:#e8a020}
 .s-customs {--btn-color:#e05c3a}.s-customs  .dot{background:#e05c3a}
 .s-done    {--btn-color:#8e9aaa}.s-done     .dot{background:#8e9aaa}
+/* Кнопка "Доставлен" чуть приглушена по умолчанию */
+.fil-btn.s-done{border-style:dashed;opacity:.82}
+.fil-btn.s-done.active{opacity:1;border-style:solid}
 
 /* LIST */
 .lst-w{padding:6px 16px 0}
 .lst-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
 .lst-ttl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txm)}
 .lst-cnt{font-size:11px;font-weight:700;background:var(--ac-dim);color:var(--ac);border-radius:20px;padding:2px 9px}
+
+/* Баннер "архив скрыт" */
+.archive-banner{background:rgba(142,154,170,.08);border:1px dashed rgba(142,154,170,.35);border-radius:10px;padding:9px 13px;margin-bottom:10px;font-size:11.5px;color:var(--txm);font-weight:500;display:flex;align-items:center;gap:7px;cursor:pointer;transition:background .15s}
+.archive-banner:active{background:rgba(142,154,170,.15)}
+.archive-banner svg{flex-shrink:0}
 
 /* CARDS */
 .card{background:var(--sur);border-radius:var(--r);margin-bottom:9px;box-shadow:var(--sh);border:1px solid var(--bd);overflow:hidden;cursor:pointer;will-change:transform;transition:transform .18s cubic-bezier(.34,1.2,.64,1),box-shadow .18s;contain:layout style}
@@ -196,15 +210,16 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 </div>
 
 <div class="fil-w">
-  <div class="fil-lbl">Статус — <span id="filHint" style="font-weight:500;letter-spacing:0">показаны все</span></div>
+  <div class="fil-lbl">Статус — <span id="filHint" style="font-weight:500;letter-spacing:0">показаны активные</span></div>
   <div class="fil-grid">
-    <button class="fil-btn s-accepted" data-s="Принят">   <span class="dot"></span>Принят</button>
-    <button class="fil-btn s-working"  data-s="В работе"> <span class="dot"></span>В работе</button>
-    <button class="fil-btn s-paid"     data-s="Оплачен">  <span class="dot"></span>Оплачен</button>
-    <button class="fil-btn s-transit"  data-s="В пути">   <span class="dot"></span>В пути</button>
-    <button class="fil-btn s-customs"  data-s="Таможня">  <span class="dot"></span>Таможня</button>
-    <button class="fil-btn s-done"     data-s="Доставлен"><span class="dot"></span>Доставлен</button>
+    <button class="fil-btn s-accepted" data-s="Принят">   <span class="dot"></span>Принят<span class="fil-count" id="cnt-Принят">0</span></button>
+    <button class="fil-btn s-working"  data-s="В работе"> <span class="dot"></span>В работе<span class="fil-count" id="cnt-В работе">0</span></button>
+    <button class="fil-btn s-paid"     data-s="Оплачен">  <span class="dot"></span>Оплачен<span class="fil-count" id="cnt-Оплачен">0</span></button>
+    <button class="fil-btn s-transit"  data-s="В пути">   <span class="dot"></span>В пути<span class="fil-count" id="cnt-В пути">0</span></button>
+    <button class="fil-btn s-customs"  data-s="Таможня">  <span class="dot"></span>Таможня<span class="fil-count" id="cnt-Таможня">0</span></button>
+    <button class="fil-btn s-done"     data-s="Доставлен"><span class="dot"></span>Доставлен<span class="fil-count" id="cnt-Доставлен">0</span></button>
   </div>
+  <div class="s-done-note">↑ Доставленные скрыты — нажмите для просмотра архива</div>
 </div>
 
 <div class="lst-w">
@@ -212,6 +227,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
     <span class="lst-ttl">Поставки</span>
     <span class="lst-cnt" id="cntBadge">…</span>
   </div>
+  <div id="archiveBanner" style="display:none"></div>
   <div id="cardList"><div class="loader"><div class="spin"></div>Загрузка данных…</div></div>
   <div class="upd-line" id="updLine"></div>
 </div>
@@ -263,6 +279,7 @@ const DEMO = [
   {id:'004',group:'Зеленый кофе',warehouse:'Алматы',supplier:'Origin Direct Ltd',status:'Принят',planDate:'2026-04-18',factDate:'',comment:'',items:[['Арабика Guatemala Antigua','300 кг'],['Арабика Kenya AA','120 кг']]},
   {id:'005',group:'Химия',warehouse:'Склад С341/6',supplier:'CleanPro Solutions',status:'Оплачен',planDate:'2026-04-25',factDate:'',comment:'Предоплата',items:[['Моющее Puly Caff 1kg','24 шт'],['Таблетки для очистки','100 шт']]},
   {id:'006',group:'Зеленый кофе',warehouse:'Астана',supplier:'Green Coffee Trading',status:'Доставлен',planDate:'2026-04-10',factDate:'2026-04-10',comment:'',items:[['Арабика Brazil Santos','500 кг']]},
+  {id:'007',group:'Оборудование',warehouse:'Алматы',supplier:'La Marzocco',status:'Доставлен',planDate:'2026-04-05',factDate:'2026-04-06',comment:'',items:[['Кофемашина GB5','1 шт']]},
 ];
 
 let orders = [], activeStatus = null, nextIdx = -1;
@@ -293,7 +310,7 @@ function toggleFilter(btn) {
   if (activeStatus === s) {
     activeStatus = null;
     document.querySelectorAll('.fil-btn').forEach(b => b.classList.remove('active'));
-    filHint.textContent = 'показаны все';
+    filHint.textContent = 'показаны активные';
   } else {
     activeStatus = s;
     document.querySelectorAll('.fil-btn').forEach(b => b.classList.remove('active'));
@@ -303,9 +320,31 @@ function toggleFilter(btn) {
   renderAll();
 }
 
+/* ── COUNT PER STATUS ── */
+function updateCounts() {
+  const wh = whSel.value, q = srchIn.value.toLowerCase().trim();
+  const statuses = ['Принят','В работе','Оплачен','В пути','Таможня','Доставлен'];
+  statuses.forEach(s => {
+    const el = document.getElementById('cnt-' + s);
+    if (!el) return;
+    const count = orders.filter(o => {
+      if (o.status !== s) return false;
+      if (wh && o.warehouse !== wh) return false;
+      if (q) {
+        const hay = (o.supplier + o.group + o.items.map(i=>i[0]).join(' ')).toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    }).length;
+    el.textContent = count;
+  });
+}
+
 function getFiltered() {
   const wh = whSel.value, q = srchIn.value.toLowerCase().trim();
   return orders.filter(o => {
+    /* Если фильтр не выбран — скрываем "Доставлен" */
+    if (!activeStatus && o.status === 'Доставлен') return false;
     if (activeStatus && o.status !== activeStatus) return false;
     if (wh && o.warehouse !== wh) return false;
     if (q) {
@@ -314,6 +353,34 @@ function getFiltered() {
     }
     return true;
   });
+}
+
+/* ── ARCHIVE BANNER ── */
+function updateArchiveBanner() {
+  const wh = whSel.value, q = srchIn.value.toLowerCase().trim();
+  const doneCount = orders.filter(o => {
+    if (o.status !== 'Доставлен') return false;
+    if (wh && o.warehouse !== wh) return false;
+    if (q) {
+      const hay = (o.supplier + o.group + o.items.map(i=>i[0]).join(' ')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  }).length;
+
+  if (!activeStatus && doneCount > 0) {
+    archiveBanner.style.display = 'flex';
+    archiveBanner.innerHTML = `<div class="archive-banner" id="archiveBannerInner">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" rx="2" stroke="#9aaab8" stroke-width="1.4"/><path d="M1 7h14M5 1l-2 3M11 1l2 3M6 10.5h4" stroke="#9aaab8" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span>Архив: ${doneCount} доставленн${doneCount===1?'ая':'ых'} — нажмите на «Доставлен» чтобы открыть</span>
+    </div>`;
+    document.getElementById('archiveBannerInner').addEventListener('click', () => {
+      const doneBtn = document.querySelector('.fil-btn.s-done');
+      if (doneBtn) toggleFilter(doneBtn);
+    });
+  } else {
+    archiveBanner.style.display = 'none';
+  }
 }
 
 /* ── NEXT CARD ── */
@@ -346,6 +413,8 @@ function renderNext() {
 /* ── RENDER ALL ── */
 function renderAll() {
   renderNext();
+  updateCounts();
+  updateArchiveBanner();
   const list = getFiltered();
   cntBadge.textContent = list.length;
   if (!list.length) {
@@ -452,7 +521,7 @@ document.getElementById('brandBtn').addEventListener('click', () => {
   whSel.value = '';
   activeStatus = null;
   document.querySelectorAll('.fil-btn').forEach(b => b.classList.remove('active'));
-  filHint.textContent = 'показаны все';
+  filHint.textContent = 'показаны активные';
   renderAll();
   window.scrollTo({top:0, behavior:'smooth'});
 });
@@ -499,6 +568,7 @@ const nxtHint  = document.getElementById('nxtHint');
 const filHint  = document.getElementById('filHint');
 const cntBadge = document.getElementById('cntBadge');
 const cardList = document.getElementById('cardList');
+const archiveBanner = document.getElementById('archiveBanner');
 const updLine  = document.getElementById('updLine');
 const mOv      = document.getElementById('mOv');
 const modal    = document.getElementById('modal');
