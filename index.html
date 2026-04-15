@@ -43,7 +43,6 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 /* SEARCH */
 .srch-w{padding:11px 16px 5px}
 .srch-b{position:relative}
-.srch-ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none}
 .srch-in{width:100%;background:var(--sur);border:1px solid var(--bd);border-radius:12px;padding:9px 13px 9px 36px;font-family:'Manrope',sans-serif;font-size:13px;color:var(--tx);transition:border .18s,box-shadow .18s}
 .srch-in::placeholder{color:var(--txm)}
 .srch-in:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-glow)}
@@ -74,8 +73,6 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 .lst-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
 .lst-ttl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txm)}
 .lst-cnt{font-size:11px;font-weight:700;background:var(--ac-dim);color:var(--ac);border-radius:20px;padding:2px 9px}
-
-.sort-btn{display:flex;align-items:center;gap:4px;background:var(--sur);border:1.5px solid var(--bd);border-radius:20px;padding:4px 10px 4px 8px;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;color:var(--txs);cursor:pointer;transition:background .15s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
 
 /* CARDS */
 .card{background:var(--sur);border-radius:var(--r);margin-bottom:9px;box-shadow:var(--sh);border:1px solid var(--bd);overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s}
@@ -115,7 +112,6 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 .m-close{width:100%;margin-top:16px;background:var(--ac);color:#fff;border:none;border-radius:12px;padding:13px;font-size:14px;font-weight:700;cursor:pointer}
 
 /* Loader & Misc */
-.loader{display:flex;flex-direction:column;align-items:center;padding:52px 24px;gap:14px;color:var(--txm)}
 .spin{width:30px;height:30px;border:3px solid var(--ac-dim);border-top-color:var(--ac);border-radius:50%;animation:rot .7s linear infinite}
 @keyframes rot{to{transform:rotate(360deg)}}
 .rfsh{position:fixed;bottom:24px;right:18px;width:44px;height:44px;background:var(--ac);color:#fff;border:none;border-radius:50%;box-shadow:0 4px 16px rgba(41,123,137,.35);display:flex;align-items:center;justify-content:center;z-index:90}
@@ -176,7 +172,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
     <span class="lst-ttl">Поставки</span>
     <span class="lst-cnt" id="cntBadge">0</span>
   </div>
-  <div id="cardList"><div class="loader"><div class="spin"></div>Загрузка…</div></div>
+  <div id="cardList"></div>
   <div id="updLine" style="text-align:center;font-size:10px;color:var(--txm);margin-top:10px"></div>
 </div>
 
@@ -216,7 +212,17 @@ const SC = {
 
 let orders = [], activeStatus = null;
 
-// Функция для парсинга чисел из строк типа "200 шт" или "1 500,50 кг"
+// Универсальная функция форматирования даты: День.Месяц.Год
+function formatDate(isoStr) {
+  if (!isoStr) return '—';
+  const d = new Date(isoStr);
+  if (isNaN(d.getTime())) return isoStr; // Если уже пришла строка типа "15.04.2024"
+  const day = String(d.getDate()).padStart(2, '0');
+  const month = String(d.getMonth() + 1).padStart(2, '0');
+  const year = d.getFullYear();
+  return `${day}.${month}.${year}`;
+}
+
 function parseQty(str) {
   if (!str) return 0;
   const cleaned = str.toString().replace(/\s/g, '').replace(',', '.');
@@ -232,7 +238,7 @@ async function loadData(spin = false) {
     orders = d.orders || [];
     if (d.updatedAt) {
         const dt = new Date(d.updatedAt);
-        updLine.textContent = 'Обновлено: ' + dt.toLocaleString('ru-RU');
+        updLine.textContent = 'Обновлено: ' + formatDate(dt) + ' ' + dt.toLocaleTimeString('ru-RU', {hour:'2-digit', minute:'2-digit'});
     }
     renderAll();
   } catch(e) {
@@ -244,7 +250,6 @@ function renderAll() {
   const wh = whSel.value;
   const q = srchIn.value.toLowerCase().trim();
   
-  // Обновление счетчиков на кнопках
   ['Принят','В работе','Оплачен','В пути','Таможня','Доставлен'].forEach(s => {
     const count = orders.filter(o => o.status === s && (wh ? o.warehouse === wh : true)).length;
     document.getElementById('cnt-' + s).textContent = count;
@@ -266,9 +271,8 @@ function renderAll() {
   cardList.innerHTML = filtered.map((o, i) => {
     const sc = SC[o.status] || SC['Принят'];
     const gi = orders.indexOf(o);
-    
-    // Считаем итого для карточки
     const totalQty = (o.items || []).reduce((sum, item) => sum + parseQty(item[1]), 0);
+    const displayDate = formatDate(o.planDate);
 
     return `
       <div class="card card-enter" style="animation-delay:${i*0.03}s" onclick="openModal(${gi})">
@@ -279,24 +283,23 @@ function renderAll() {
             <div class="s-pill" style="background:${sc.bg};color:${sc.tx}">${o.status}</div>
           </div>
           <div class="c-meta">
-            <div class="m-chip">📅 ${o.planDate || '—'}</div>
+            <div class="m-chip">📅 ${displayDate}</div>
             <div class="m-chip" style="background:var(--ac-dim);color:var(--ac);font-weight:700">📦 ${totalQty.toLocaleString('ru-RU')}</div>
             <div class="m-chip">📍 ${o.warehouse}</div>
           </div>
         </div>
         <div class="c-foot">
           <span class="c-supp">${o.supplier}</span>
-          <span class="c-date">${o.planDate || ''}</span>
+          <span class="c-date">${displayDate}</span>
         </div>
       </div>
     `;
   }).join('');
 
-  // Ближайшее поступление
   const next = orders.filter(o => o.status !== 'Доставлен' && o.planDate).sort((a,b) => a.planDate.localeCompare(b.planDate))[0];
   if (next) {
       nxtTitle.textContent = next.supplier;
-      nxtMeta.textContent = next.group + ' • ' + next.planDate;
+      nxtMeta.textContent = next.group + ' • ' + formatDate(next.planDate);
   }
 }
 
@@ -313,7 +316,7 @@ function openModal(idx) {
   const fields = [
     ['Поставщик', o.supplier],
     ['Склад', o.warehouse],
-    ['Дата плана', o.planDate || '—'],
+    ['Дата плана', formatDate(o.planDate)],
     ['Комментарий', o.comment || '—']
   ];
   
@@ -321,14 +324,12 @@ function openModal(idx) {
     <div class="info-row"><span style="color:var(--txm);font-size:11px">${l}</span><span class="info-val">${v}</span></div>
   `).join('');
 
-  // Считаем итого для таблицы в модалке
   const totalQty = (o.items || []).reduce((sum, item) => sum + parseQty(item[1]), 0);
 
   let itemsHtml = (o.items || []).map(([n, q]) => `
     <tr><td>${n}</td><td class="qty-c">${q}</td></tr>
   `).join('');
 
-  // Добавляем строку ИТОГО вниз таблицы
   itemsHtml += `
     <tr style="background:var(--ac-dim); font-weight:800;">
       <td style="border-top:2px solid var(--ac); color:var(--tx)">ИТОГО:</td>
@@ -346,7 +347,6 @@ function closeModal() {
   document.body.style.overflow = '';
 }
 
-// Слушатели событий
 document.querySelectorAll('.fil-btn').forEach(btn => {
   btn.onclick = () => {
     const s = btn.dataset.s;
