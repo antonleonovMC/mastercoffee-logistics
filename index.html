@@ -1,0 +1,663 @@
+<!DOCTYPE html>
+<html lang="ru">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
+<title>Master Coffee — Логистика</title>
+<link rel="preconnect" href="https://fonts.googleapis.com">
+<link href="https://fonts.googleapis.com/css2?family=Manrope:wght@400;500;600;700;800&family=Playfair+Display:wght@600&display=swap" rel="stylesheet">
+<style>
+:root {
+  --ac:      #297b89;
+  --ac-dk:   #1e6070;
+  --ac-lt:   #3a9aaa;
+  --ac-dim:  rgba(41,123,137,.10);
+  --ac-glow: rgba(41,123,137,.22);
+  --bg:      #f2f5f7;
+  --sur:     #ffffff;
+  --sur2:    #eef1f4;
+  --bd:      rgba(41,123,137,.12);
+  --tx:      #1a2430;
+  --txs:     #5a6a78;
+  --txm:     #9aaab8;
+  --r:       16px;
+  --rs:      10px;
+  --sh:      0 1px 3px rgba(0,0,0,.05),0 4px 20px rgba(41,123,137,.07);
+}
+*{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
+body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:80px;font-size:14px;-webkit-font-smoothing:antialiased}
+
+/* HEADER */
+.hdr{background:var(--sur);border-bottom:1px solid var(--bd);padding:13px 16px 11px;position:sticky;top:0;z-index:100;box-shadow:0 1px 10px rgba(41,123,137,.08)}
+.hdr-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
+.brand{display:flex;align-items:center;gap:9px;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
+.brand:active .logo-w{transform:scale(.92)}
+.logo-w{width:34px;height:34px;background:var(--ac);border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;box-shadow:0 2px 8px rgba(41,123,137,.28);transition:transform .15s}
+.logo-w img{width:26px;height:26px;object-fit:contain;filter:brightness(0)invert(1)}
+.brand-text{display:flex;flex-direction:column;line-height:1}
+.brand-name{font-family:'Playfair Display',serif;font-size:14.5px;font-weight:600;color:var(--ac);letter-spacing:.02em}
+.brand-sub{font-size:9px;font-weight:700;color:var(--txm);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+.wh-sel{appearance:none;background:var(--ac-dim);border:1px solid var(--bd);border-radius:20px;padding:6px 26px 6px 11px;font-family:'Manrope',sans-serif;font-size:11.5px;font-weight:700;color:var(--ac);cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M1 1l3.5 3L8 1' stroke='%23297b89' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.wh-sel:focus{outline:none}
+
+/* SEARCH */
+.srch-w{padding:11px 16px 5px}
+.srch-b{position:relative}
+.srch-ic{position:absolute;left:12px;top:50%;transform:translateY(-50%);pointer-events:none}
+.srch-in{width:100%;background:var(--sur);border:1px solid var(--bd);border-radius:12px;padding:9px 13px 9px 36px;font-family:'Manrope',sans-serif;font-size:13px;color:var(--tx);transition:border .18s,box-shadow .18s}
+.srch-in::placeholder{color:var(--txm)}
+.srch-in:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-glow)}
+
+/* NEXT CARD */
+.nxt-w{padding:13px 16px 2px}
+.nxt-card{background:linear-gradient(135deg,var(--ac) 0%,var(--ac-dk) 100%);border-radius:var(--r);padding:15px 17px;color:#fff;position:relative;overflow:hidden;box-shadow:0 4px 22px rgba(41,123,137,.32);cursor:pointer;transition:transform .18s,box-shadow .18s;-webkit-tap-highlight-color:transparent}
+.nxt-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(41,123,137,.4)}
+.nxt-card:active{transform:scale(.97)}
+.nxt-card::before{content:'';position:absolute;top:-24px;right:-24px;width:90px;height:90px;background:rgba(255,255,255,.07);border-radius:50%;pointer-events:none}
+.nxt-card::after{content:'';position:absolute;bottom:-36px;left:24px;width:130px;height:130px;background:rgba(255,255,255,.04);border-radius:50%;pointer-events:none}
+.nxt-label{font-size:9px;font-weight:700;letter-spacing:.15em;text-transform:uppercase;opacity:.65;margin-bottom:5px}
+.nxt-title{font-size:15px;font-weight:800;margin-bottom:3px;letter-spacing:-.01em}
+.nxt-meta{font-size:11px;opacity:.72;margin-bottom:11px}
+.nxt-footer{display:flex;align-items:center;justify-content:space-between;gap:8px}
+.nxt-days{display:flex;align-items:center;gap:5px;background:rgba(255,255,255,.14);border-radius:20px;padding:4px 11px;font-size:11.5px;font-weight:600}
+.nxt-days .pulse{width:6px;height:6px;background:#7DFFCD;border-radius:50%;animation:pulse 1.8s ease-in-out infinite;flex-shrink:0}
+@keyframes pulse{0%,100%{opacity:1;transform:scale(1)}50%{opacity:.5;transform:scale(.7)}}
+.nxt-badge{font-size:11px;font-weight:700;background:rgba(255,255,255,.18);border-radius:6px;padding:4px 10px}
+.nxt-tap-hint{position:absolute;bottom:13px;right:14px;font-size:9px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;opacity:.4;display:flex;align-items:center;gap:3px}
+
+/* FILTERS */
+.fil-w{padding:15px 16px 6px}
+.fil-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txm);margin-bottom:9px}
+.fil-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
+.fil-btn{display:flex;align-items:center;gap:5px;background:var(--sur);border:1.5px solid var(--bd);border-radius:9px;padding:8px 9px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:11px;font-weight:600;color:var(--txs);transition:background .15s,border-color .15s,color .15s;white-space:nowrap;overflow:hidden;position:relative}
+.fil-btn .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
+.fil-btn .fil-count{margin-left:auto;font-size:10px;font-weight:700;background:var(--sur2);color:var(--txm);border-radius:20px;padding:1px 6px;flex-shrink:0;transition:background .15s,color .15s;min-width:18px;text-align:center}
+.fil-btn.active{border-color:var(--btn-color);background:color-mix(in srgb,var(--btn-color) 10%,#fff);color:var(--btn-color)}
+.fil-btn.active .fil-count{background:color-mix(in srgb,var(--btn-color) 18%,#fff);color:var(--btn-color)}
+.s-done-note{font-size:9.5px;color:var(--txm);text-align:center;margin-top:5px;font-weight:500;letter-spacing:.01em}
+
+.s-accepted{--btn-color:#2da87a}.s-accepted .dot{background:#2da87a}
+.s-working {--btn-color:#297b89}.s-working  .dot{background:#297b89}
+.s-paid    {--btn-color:#6c63ff}.s-paid     .dot{background:#6c63ff}
+.s-transit {--btn-color:#e8a020}.s-transit  .dot{background:#e8a020}
+.s-customs {--btn-color:#e05c3a}.s-customs  .dot{background:#e05c3a}
+.s-done    {--btn-color:#8e9aaa}.s-done     .dot{background:#8e9aaa}
+.fil-btn.s-done{border-style:dashed;opacity:.82}
+.fil-btn.s-done.active{opacity:1;border-style:solid}
+
+/* LIST */
+.lst-w{padding:6px 16px 0}
+.lst-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
+.lst-ttl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txm)}
+.lst-cnt{font-size:11px;font-weight:700;background:var(--ac-dim);color:var(--ac);border-radius:20px;padding:2px 9px}
+
+/* SORT BUTTON — новый элемент */
+.lst-hdr-left{display:flex;align-items:center;gap:8px}
+.sort-btn{display:flex;align-items:center;gap:4px;background:var(--sur);border:1.5px solid var(--bd);border-radius:20px;padding:4px 10px 4px 8px;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;color:var(--txs);cursor:pointer;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
+.sort-btn:active{transform:scale(.95)}
+.sort-btn.desc{color:var(--ac);border-color:rgba(41,123,137,.3);background:var(--ac-dim)}
+.sort-btn.asc {color:var(--ac);border-color:rgba(41,123,137,.3);background:var(--ac-dim)}
+.sort-btn svg{flex-shrink:0;transition:transform .22s cubic-bezier(.34,1.2,.64,1)}
+.sort-btn.asc svg{transform:rotate(180deg)}
+
+/* ARCHIVE BANNER */
+.archive-banner{background:rgba(142,154,170,.08);border:1px dashed rgba(142,154,170,.35);border-radius:10px;padding:9px 13px;margin-bottom:10px;font-size:11.5px;color:var(--txm);font-weight:500;display:flex;align-items:center;gap:7px;cursor:pointer;transition:background .15s}
+.archive-banner:active{background:rgba(142,154,170,.15)}
+.archive-banner svg{flex-shrink:0}
+
+/* CARDS */
+.card{background:var(--sur);border-radius:var(--r);margin-bottom:9px;box-shadow:var(--sh);border:1px solid var(--bd);overflow:hidden;cursor:pointer;will-change:transform;transition:transform .18s cubic-bezier(.34,1.2,.64,1),box-shadow .18s;contain:layout style}
+.card-enter{animation:cIn .32s cubic-bezier(.34,1.1,.64,1) both}
+@keyframes cIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card:active{transform:scale(.983)}
+.card:hover{transform:translateY(-2px);box-shadow:0 6px 24px rgba(41,123,137,.13)}
+.c-stripe{height:3px;width:100%}
+.c-body{padding:12px 14px 10px}
+.c-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px}
+.c-id{font-size:12.5px;font-weight:700;color:var(--tx);line-height:1.3}
+.c-id span{color:var(--ac)}
+.s-pill{font-size:10px;font-weight:700;border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0;margin-top:1px}
+.c-meta{display:flex;gap:5px;flex-wrap:wrap}
+.m-chip{display:flex;align-items:center;gap:3px;font-size:10.5px;color:var(--txs);background:var(--sur2);border-radius:6px;padding:3px 7px;font-weight:500}
+/* Чип «добавлено» */
+.m-chip.chip-added{background:rgba(41,123,137,.07);color:var(--ac)}
+.c-foot{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 9px;border-top:1px solid var(--bd);background:var(--sur2)}
+.c-supp{font-size:11px;font-weight:600;color:var(--txs)}
+.c-date{font-size:10.5px;color:var(--txm);font-weight:500}
+.urgent{color:#e05c3a;font-weight:700}
+
+/* LOADER / EMPTY / ERROR */
+.loader{display:flex;flex-direction:column;align-items:center;padding:52px 24px;gap:14px;color:var(--txm);font-size:13px}
+.spin{width:36px;height:36px;border:3px solid var(--ac-dim);border-top-color:var(--ac);border-radius:50%;animation:rot .7s linear infinite}
+@keyframes rot{to{transform:rotate(360deg)}}
+.empty{display:flex;flex-direction:column;align-items:center;padding:48px 24px;gap:10px;color:var(--txm);font-size:13px;text-align:center}
+.err-banner{margin:12px 16px;background:#fdeeed;border:1px solid #f5b8b0;border-radius:12px;padding:12px 14px;font-size:12px;color:#992200;font-weight:600}
+.upd-line{text-align:center;font-size:10px;color:var(--txm);padding:6px 0 0;font-weight:500}
+
+/* MODAL */
+.m-ov{position:fixed;inset:0;background:rgba(8,18,28,0);backdrop-filter:blur(0px);z-index:200;display:flex;align-items:flex-end;pointer-events:none;transition:background .25s,backdrop-filter .25s}
+.m-ov.open{background:rgba(8,18,28,.45);backdrop-filter:blur(4px);pointer-events:all}
+.modal{background:var(--sur);border-radius:22px 22px 0 0;width:100%;max-height:91vh;overflow-y:auto;transform:translateY(100%);transition:transform .32s cubic-bezier(.34,1.1,.64,1);will-change:transform;touch-action:pan-y}
+.m-ov.open .modal{transform:translateY(0)}
+.m-ov.closing .modal{transform:translateY(100%);transition:transform .28s cubic-bezier(.4,0,.6,1)}
+.m-ov.closing{background:rgba(8,18,28,0);backdrop-filter:blur(0px);transition:background .28s,backdrop-filter .28s}
+.m-handle{width:36px;height:4px;background:var(--bd);border-radius:2px;margin:11px auto 0;cursor:grab}
+.m-hdr{padding:14px 18px 13px;border-bottom:1px solid var(--bd)}
+.m-id{font-size:10.5px;font-weight:700;letter-spacing:.1em;text-transform:uppercase;color:var(--ac);margin-bottom:3px}
+.m-title{font-size:17px;font-weight:800;color:var(--tx);letter-spacing:-.02em;margin-bottom:7px}
+.m-status{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;border-radius:20px;padding:4px 12px}
+.m-body{padding:14px 18px}
+.info-row{display:flex;align-items:flex-start;justify-content:space-between;padding:9px 0;border-bottom:1px solid var(--bd);gap:12px}
+.info-row:last-child{border-bottom:none}
+.info-lbl{font-size:11px;color:var(--txm);font-weight:500;flex-shrink:0;min-width:110px}
+.info-val{font-size:12.5px;font-weight:600;color:var(--tx);text-align:right}
+.sec-ttl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txm);margin:16px 0 9px}
+.itm-tbl{width:100%;border-radius:11px;overflow:hidden;border:1px solid var(--bd);border-collapse:collapse}
+.itm-tbl th{background:var(--ac-dim);color:var(--ac);font-size:10px;font-weight:700;letter-spacing:.08em;text-transform:uppercase;padding:8px 13px;text-align:left}
+.itm-tbl td{padding:9px 13px;font-size:12px;color:var(--tx);border-top:1px solid var(--bd);font-weight:500}
+.itm-tbl tr:nth-child(even) td{background:var(--sur2)}
+.qty-c{font-weight:700;color:var(--ac);text-align:right;white-space:nowrap}
+.m-close{width:100%;margin-top:16px;background:var(--ac);color:#fff;border:none;border-radius:12px;padding:13px;font-family:'Manrope',sans-serif;font-size:14px;font-weight:700;cursor:pointer;transition:background .18s}
+.m-close:active{background:var(--ac-lt)}
+
+/* REFRESH */
+.rfsh{position:fixed;bottom:24px;right:18px;width:44px;height:44px;background:var(--ac);color:#fff;border:none;border-radius:50%;box-shadow:0 4px 16px rgba(41,123,137,.35);display:flex;align-items:center;justify-content:center;cursor:pointer;transition:transform .18s,box-shadow .18s;z-index:90}
+.rfsh:active{transform:scale(.92)}
+.rfsh.spinning svg{animation:rot .7s linear infinite}
+</style>
+</head>
+<body>
+
+<header class="hdr">
+  <div class="hdr-row">
+    <div class="brand" id="brandBtn" role="button" tabindex="0" title="На главную">
+      <div class="logo-w">
+        <img src="https://mastercoffee.kz/catalog/public/images/croppednewlogo.svg" alt="MC"
+          onerror="this.style.display='none';this.parentNode.innerHTML='☕'">
+      </div>
+      <div class="brand-text">
+        <span class="brand-name">Master Coffee</span>
+        <span class="brand-sub">Логистика</span>
+      </div>
+    </div>
+    <select class="wh-sel" id="whSel">
+      <option value="">Все склады</option>
+      <option value="УК">УК</option>
+      <option value="Астана">Астана</option>
+      <option value="Алматы">Алматы</option>
+      <option value="Обжарочный цех">Обжарочный цех</option>
+      <option value="Склад С341/6">Склад С341/6</option>
+    </select>
+  </div>
+</header>
+
+<div class="srch-w">
+  <div class="srch-b">
+    <svg class="srch-ic" width="15" height="15" viewBox="0 0 15 15" fill="none">
+      <circle cx="6.5" cy="6.5" r="5" stroke="#9aaab8" stroke-width="1.5"/>
+      <path d="M10.5 10.5L13.5 13.5" stroke="#9aaab8" stroke-width="1.5" stroke-linecap="round"/>
+    </svg>
+    <input class="srch-in" type="text" placeholder="Поиск по поставщику или товарам…" id="srchIn">
+  </div>
+</div>
+
+<div class="nxt-w">
+  <div class="nxt-card" id="nxtCard" role="button" tabindex="0">
+    <div class="nxt-label">Ближайшее поступление</div>
+    <div class="nxt-title" id="nxtTitle">Загрузка…</div>
+    <div class="nxt-meta"  id="nxtMeta"></div>
+    <div class="nxt-footer">
+      <div class="nxt-days"><span class="pulse"></span><span id="nxtDays">—</span></div>
+      <div class="nxt-badge" id="nxtWh"></div>
+    </div>
+    <div class="nxt-tap-hint" id="nxtHint" style="display:none">
+      <svg width="9" height="9" viewBox="0 0 10 10" fill="none"><path d="M1 9l8-8M3 1h6v6" stroke="#fff" stroke-width="1.5" stroke-linecap="round" stroke-linejoin="round"/></svg>
+      открыть
+    </div>
+  </div>
+</div>
+
+<div class="fil-w">
+  <div class="fil-lbl">Статус — <span id="filHint" style="font-weight:500;letter-spacing:0">показаны активные</span></div>
+  <div class="fil-grid">
+    <button class="fil-btn s-accepted" data-s="Принят">   <span class="dot"></span>Принят<span class="fil-count" id="cnt-Принят">0</span></button>
+    <button class="fil-btn s-working"  data-s="В работе"> <span class="dot"></span>В работе<span class="fil-count" id="cnt-В работе">0</span></button>
+    <button class="fil-btn s-paid"     data-s="Оплачен">  <span class="dot"></span>Оплачен<span class="fil-count" id="cnt-Оплачен">0</span></button>
+    <button class="fil-btn s-transit"  data-s="В пути">   <span class="dot"></span>В пути<span class="fil-count" id="cnt-В пути">0</span></button>
+    <button class="fil-btn s-customs"  data-s="Таможня">  <span class="dot"></span>Таможня<span class="fil-count" id="cnt-Таможня">0</span></button>
+    <button class="fil-btn s-done"     data-s="Доставлен"><span class="dot"></span>Доставлен<span class="fil-count" id="cnt-Доставлен">0</span></button>
+  </div>
+  <div class="s-done-note">↑ Доставленные скрыты — нажмите для просмотра архива</div>
+</div>
+
+<div class="lst-w">
+  <div class="lst-hdr">
+    <!-- ① Левая группа: заголовок + кнопка сортировки -->
+    <div class="lst-hdr-left">
+      <span class="lst-ttl">Поставки</span>
+      <!-- ② Кнопка переключения направления сортировки -->
+      <button class="sort-btn desc" id="sortBtn" title="Сортировка по дате добавления">
+        <svg width="11" height="11" viewBox="0 0 12 12" fill="none" id="sortIcon">
+          <path d="M2 2h8M2 5.5h5.5M2 9h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
+          <path d="M9.5 5v5M9.5 10l-1.5-1.5M9.5 10l1.5-1.5" stroke="currentColor" stroke-width="1.3" stroke-linecap="round" stroke-linejoin="round"/>
+        </svg>
+        Сначала новые
+      </button>
+    </div>
+    <span class="lst-cnt" id="cntBadge">…</span>
+  </div>
+  <div id="archiveBanner" style="display:none"></div>
+  <div id="cardList"><div class="loader"><div class="spin"></div>Загрузка данных…</div></div>
+  <div class="upd-line" id="updLine"></div>
+</div>
+
+<!-- MODAL -->
+<div class="m-ov" id="mOv">
+  <div class="modal" id="modal">
+    <div class="m-handle" id="mHandle"></div>
+    <div class="m-hdr">
+      <div class="m-id"     id="mId"></div>
+      <div class="m-title"  id="mTitle"></div>
+      <div class="m-status" id="mStatus"></div>
+    </div>
+    <div class="m-body">
+      <div id="mRows"></div>
+      <div class="sec-ttl">Состав заказа</div>
+      <table class="itm-tbl">
+        <thead><tr><th>Наименование</th><th style="text-align:right">Количество</th></tr></thead>
+        <tbody id="mItems"></tbody>
+      </table>
+      <button class="m-close" id="mCloseBtn">Закрыть</button>
+    </div>
+  </div>
+</div>
+
+<button class="rfsh" id="rfshBtn" title="Обновить">
+  <svg width="18" height="18" viewBox="0 0 18 18" fill="none">
+    <path d="M15.5 9A6.5 6.5 0 1 1 9 2.5" stroke="white" stroke-width="1.8" stroke-linecap="round"/>
+    <path d="M9 2.5l2.5 2.5L9 7.5" stroke="white" stroke-width="1.8" stroke-linecap="round" stroke-linejoin="round"/>
+  </svg>
+</button>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYfKN9J2yTqWNC2Pz31tqr7GEN6ClrXcFGLtNT-8bT_ECrmoVeXKoueX8AeMvl5d0W-w/exec';
+
+const SC = {
+  'Принят':    {bg:'rgba(45,168,122,.12)', tx:'#2da87a', stripe:'#2da87a'},
+  'В работе':  {bg:'rgba(41,123,137,.12)', tx:'#297b89', stripe:'#297b89'},
+  'Оплачен':   {bg:'rgba(108,99,255,.12)',tx:'#6c63ff', stripe:'#6c63ff'},
+  'В пути':    {bg:'rgba(232,160,32,.13)',tx:'#c88a10', stripe:'#e8a020'},
+  'Таможня':   {bg:'rgba(224,92,58,.12)', tx:'#e05c3a', stripe:'#e05c3a'},
+  'Доставлен': {bg:'rgba(142,154,170,.12)',tx:'#7a8a9a',stripe:'#8e9aaa'},
+};
+
+// ③ createdAt добавлен во все записи — поле используется для сортировки
+const DEMO = [
+  {id:'001',group:'Зеленый кофе',warehouse:'Астана',supplier:'Green Coffee Trading',status:'В пути',
+   planDate:'2026-04-16',factDate:'',comment:'Срочная поставка',createdAt:'2026-04-01T09:15:00',
+   items:[['Арабика Ethiopia Yirgacheffe','200 кг'],['Арабика Colombia Huila','150 кг'],['Робуста Vietnam','100 кг']]},
+  {id:'002',group:'Упаковка',warehouse:'УК',supplier:'PackPro KZ',status:'В работе',
+   planDate:'2026-04-20',factDate:'',comment:'',createdAt:'2026-04-03T14:40:00',
+   items:[['Пакеты 250g с клапаном','5 000 шт'],['Пакеты 500g с клапаном','3 000 шт']]},
+  {id:'003',group:'Оборудование',warehouse:'Обжарочный цех',supplier:'Probat Systems GmbH',status:'Таможня',
+   planDate:'2026-04-22',factDate:'',comment:'Документы на таможне',createdAt:'2026-04-05T11:00:00',
+   items:[['Горелки Probat L25','2 шт'],['Запчасти к барабану','1 комплект']]},
+  {id:'004',group:'Зеленый кофе',warehouse:'Алматы',supplier:'Origin Direct Ltd',status:'Принят',
+   planDate:'2026-04-18',factDate:'',comment:'',createdAt:'2026-04-07T08:30:00',
+   items:[['Арабика Guatemala Antigua','300 кг'],['Арабика Kenya AA','120 кг']]},
+  {id:'005',group:'Химия',warehouse:'Склад С341/6',supplier:'CleanPro Solutions',status:'Оплачен',
+   planDate:'2026-04-25',factDate:'',comment:'Предоплата',createdAt:'2026-04-10T16:55:00',
+   items:[['Моющее Puly Caff 1kg','24 шт'],['Таблетки для очистки','100 шт']]},
+  {id:'006',group:'Зеленый кофе',warehouse:'Астана',supplier:'Green Coffee Trading',status:'Доставлен',
+   planDate:'2026-04-10',factDate:'2026-04-10',comment:'',createdAt:'2026-03-28T10:20:00',
+   items:[['Арабика Brazil Santos','500 кг']]},
+  {id:'007',group:'Оборудование',warehouse:'Алматы',supplier:'La Marzocco',status:'Доставлен',
+   planDate:'2026-04-05',factDate:'2026-04-06',comment:'',createdAt:'2026-03-22T13:10:00',
+   items:[['Кофемашина GB5','1 шт']]},
+];
+
+let orders = [], activeStatus = null, nextIdx = -1;
+
+// ④ Состояние сортировки: 'desc' = сначала новые, 'asc' = сначала старые
+let sortDir = 'desc';
+
+/* ── SORT BUTTON ── */
+const sortBtn = document.getElementById('sortBtn');
+sortBtn.addEventListener('click', () => {
+  sortDir = sortDir === 'desc' ? 'asc' : 'desc';
+  sortBtn.className = 'sort-btn ' + sortDir;
+  sortBtn.childNodes[1].textContent = sortDir === 'desc' ? ' Сначала новые' : ' Сначала старые';
+  renderAll();
+});
+
+/* ── DATA ── */
+async function loadData(spin = false) {
+  if (spin) rfshBtn.classList.add('spinning');
+  if (!SCRIPT_URL || SCRIPT_URL.includes('ВСТАВЬ')) {
+    orders = DEMO; renderAll();
+    updLine.textContent = '⚠️ Demo-режим — подключите Google Sheets';
+    rfshBtn.classList.remove('spinning'); return;
+  }
+  try {
+    const r = await fetch(SCRIPT_URL + '?t=' + Date.now());
+    const d = await r.json();
+    orders = d.orders || [];
+    const dt = new Date(d.updatedAt);
+    updLine.textContent = 'Обновлено: ' + dt.toLocaleString('ru-RU',{day:'numeric',month:'short',hour:'2-digit',minute:'2-digit'});
+    renderAll();
+  } catch(e) {
+    cardList.innerHTML = '<div class="err-banner">⚠️ Не удалось загрузить данные. Проверьте URL скрипта или соединение.</div>';
+  } finally { rfshBtn.classList.remove('spinning'); }
+}
+
+/* ── FILTERS ── */
+function toggleFilter(btn) {
+  const s = btn.dataset.s;
+  if (activeStatus === s) {
+    activeStatus = null;
+    document.querySelectorAll('.fil-btn').forEach(b => b.classList.remove('active'));
+    filHint.textContent = 'показаны активные';
+  } else {
+    activeStatus = s;
+    document.querySelectorAll('.fil-btn').forEach(b => b.classList.remove('active'));
+    btn.classList.add('active');
+    filHint.textContent = s;
+  }
+  renderAll();
+}
+
+/* ── COUNT PER STATUS ── */
+function updateCounts() {
+  const wh = whSel.value, q = srchIn.value.toLowerCase().trim();
+  ['Принят','В работе','Оплачен','В пути','Таможня','Доставлен'].forEach(s => {
+    const el = document.getElementById('cnt-' + s);
+    if (!el) return;
+    el.textContent = orders.filter(o => {
+      if (o.status !== s) return false;
+      if (wh && o.warehouse !== wh) return false;
+      if (q) {
+        const hay = (o.supplier + o.group + o.items.map(i=>i[0]).join(' ')).toLowerCase();
+        if (!hay.includes(q)) return false;
+      }
+      return true;
+    }).length;
+  });
+}
+
+// ⑤ Вспомогательная функция: получить timestamp для сортировки
+// Приоритет: createdAt → planDate → 0 (чтобы записи без дат шли в конец)
+function getSortTs(o) {
+  if (o.createdAt) return new Date(o.createdAt).getTime();
+  if (o.planDate)  return new Date(o.planDate).getTime();
+  return 0;
+}
+
+function getFiltered() {
+  const wh = whSel.value, q = srchIn.value.toLowerCase().trim();
+  const filtered = orders.filter(o => {
+    if (!activeStatus && o.status === 'Доставлен') return false;
+    if (activeStatus && o.status !== activeStatus) return false;
+    if (wh && o.warehouse !== wh) return false;
+    if (q) {
+      const hay = (o.supplier + o.group + o.items.map(i=>i[0]).join(' ')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  });
+
+  // ⑥ Сортировка по дате добавления (createdAt)
+  filtered.sort((a, b) => {
+    const diff = getSortTs(b) - getSortTs(a); // desc по умолчанию
+    return sortDir === 'desc' ? diff : -diff;
+  });
+
+  return filtered;
+}
+
+/* ── ARCHIVE BANNER ── */
+function updateArchiveBanner() {
+  const wh = whSel.value, q = srchIn.value.toLowerCase().trim();
+  const doneCount = orders.filter(o => {
+    if (o.status !== 'Доставлен') return false;
+    if (wh && o.warehouse !== wh) return false;
+    if (q) {
+      const hay = (o.supplier + o.group + o.items.map(i=>i[0]).join(' ')).toLowerCase();
+      if (!hay.includes(q)) return false;
+    }
+    return true;
+  }).length;
+
+  if (!activeStatus && doneCount > 0) {
+    archiveBanner.style.display = 'flex';
+    archiveBanner.innerHTML = `<div class="archive-banner" id="archiveBannerInner">
+      <svg width="14" height="14" viewBox="0 0 16 16" fill="none"><rect x="1" y="4" width="14" height="10" rx="2" stroke="#9aaab8" stroke-width="1.4"/><path d="M1 7h14M5 1l-2 3M11 1l2 3M6 10.5h4" stroke="#9aaab8" stroke-width="1.4" stroke-linecap="round"/></svg>
+      <span>Архив: ${doneCount} доставленн${doneCount===1?'ая':'ых'} — нажмите на «Доставлен» чтобы открыть</span>
+    </div>`;
+    document.getElementById('archiveBannerInner').addEventListener('click', () => {
+      const doneBtn = document.querySelector('.fil-btn.s-done');
+      if (doneBtn) toggleFilter(doneBtn);
+    });
+  } else {
+    archiveBanner.style.display = 'none';
+  }
+}
+
+/* ── NEXT CARD ── */
+function renderNext() {
+  const wh = whSel.value;
+  const cands = orders.filter(o => o.status !== 'Доставлен' && (wh ? o.warehouse === wh : true) && o.planDate)
+    .sort((a,b) => a.planDate.localeCompare(b.planDate));
+  const el = document.getElementById('nxtCard');
+  if (!cands.length) {
+    nxtTitle.textContent = 'Нет запланированных поставок';
+    nxtMeta.textContent = ''; nxtDays.textContent = '—';
+    nxtWh.textContent = wh || 'Все склады';
+    nxtHint.style.display = 'none';
+    el.style.cursor = 'default'; nextIdx = -1; return;
+  }
+  const next = cands[0];
+  nextIdx = orders.indexOf(next);
+  const today = new Date(); today.setHours(0,0,0,0);
+  const plan = new Date(next.planDate);
+  const diff = Math.round((plan - today) / 86400000);
+  const ds = plan.toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+  nxtTitle.textContent = next.group + ' — ' + (next.items[0]?next.items[0][0]:next.group).split(' ').slice(0,4).join(' ');
+  nxtMeta.textContent = 'Поставщик: ' + next.supplier;
+  nxtDays.textContent = diff <= 0 ? 'сегодня' : diff === 1 ? 'завтра' : `через ${diff} дн — ${ds}`;
+  nxtWh.textContent = next.warehouse;
+  nxtHint.style.display = 'flex';
+  el.style.cursor = 'pointer';
+}
+
+/* ── RENDER ALL ── */
+function renderAll() {
+  renderNext();
+  updateCounts();
+  updateArchiveBanner();
+  const list = getFiltered();
+  cntBadge.textContent = list.length;
+  if (!list.length) {
+    cardList.innerHTML = `<div class="empty"><svg width="40" height="40" viewBox="0 0 24 24" fill="none" stroke="#297b89" stroke-width="1.3"><path d="M21 16V8a2 2 0 0 0-1-1.73l-7-4a2 2 0 0 0-2 0l-7 4A2 2 0 0 0 3 8v8a2 2 0 0 0 1 1.73l7 4a2 2 0 0 0 2 0l7-4A2 2 0 0 0 21 16z"/></svg>Нет поставок по выбранным фильтрам</div>`;
+    return;
+  }
+  const today = new Date(); today.setHours(0,0,0,0);
+
+  // ⑦ Форматирование даты добавления для чипа на карточке
+  const fmtAdded = iso => {
+    if (!iso) return null;
+    const d = new Date(iso);
+    return d.toLocaleDateString('ru-RU',{day:'numeric',month:'short'});
+  };
+
+  const html = list.map((o,i) => {
+    const sc = SC[o.status] || SC['Принят'];
+    const plan = o.planDate ? new Date(o.planDate) : null;
+    const diff = plan ? Math.round((plan - today) / 86400000) : null;
+    const urg = diff !== null && diff <= 2 && o.status !== 'Доставлен';
+    const dl = plan ? plan.toLocaleDateString('ru-RU',{day:'numeric',month:'short'}) : '—';
+    const ul = diff === 0 ? '⚡ Сегодня' : diff === 1 ? '⚡ Завтра' : dl;
+    const gi = orders.indexOf(o);
+    const addedStr = fmtAdded(o.createdAt);
+    // ⑧ Чип «добавлено» показывается только если есть createdAt
+    const addedChip = addedStr
+      ? `<div class="m-chip chip-added"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 4v2.5l1.5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>добавлено ${addedStr}</div>`
+      : '';
+    return `<div class="card card-enter" style="animation-delay:${Math.min(i*0.04,.4)}s" data-idx="${gi}">
+      <div class="c-stripe" style="background:${sc.stripe}"></div>
+      <div class="c-body">
+        <div class="c-head">
+          <div class="c-id"><span>#${o.id}</span> — ${o.group} — ${o.warehouse}</div>
+          <div class="s-pill" style="background:${sc.bg};color:${sc.tx}">${o.status}</div>
+        </div>
+        <div class="c-meta">
+          <div class="m-chip"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 1v2M8 1v2M1 5h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>${dl}</div>
+          <div class="m-chip"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 1C4.34 1 3 2.34 3 4c0 2.25 3 7 3 7s3-4.75 3-7c0-1.66-1.34-3-3-3z" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="4" r="1" fill="currentColor"/></svg>${o.warehouse}</div>
+          ${addedChip}
+        </div>
+      </div>
+      <div class="c-foot">
+        <span class="c-supp">${o.supplier}</span>
+        <span class="c-date ${urg?'urgent':''}">${urg?ul:dl}</span>
+      </div>
+    </div>`;
+  }).join('');
+  cardList.innerHTML = html;
+}
+
+/* ── MODAL OPEN ── */
+function openModal(idx) {
+  const o = orders[idx];
+  if (!o) return;
+  const sc = SC[o.status] || SC['Принят'];
+  mId.textContent = `Заказ #${o.id}`;
+  mTitle.textContent = `${o.group} — ${o.warehouse}`;
+  mStatus.innerHTML = `<span style="width:7px;height:7px;background:${sc.tx};border-radius:50%;display:inline-block"></span> ${o.status}`;
+  mStatus.style.cssText = `background:${sc.bg};color:${sc.tx}`;
+  const fmt = d => d ? new Date(d).toLocaleDateString('ru-RU',{day:'numeric',month:'long',year:'numeric'}) : '—';
+  const fmtDt = d => d ? new Date(d).toLocaleString('ru-RU',{day:'numeric',month:'long',year:'numeric',hour:'2-digit',minute:'2-digit'}) : '—';
+  const fields = [
+    ['Склад',       o.warehouse],
+    ['Поставщик',   o.supplier],
+    ['Статус',      o.status],
+    ['Дата добавления', o.createdAt ? fmtDt(o.createdAt) : '—'],
+    ['План. дата',  fmt(o.planDate)],
+    ['Факт. дата',  o.factDate ? fmt(o.factDate) : 'Ожидается'],
+    ['Комментарий', o.comment || '—'],
+  ];
+  mRows.innerHTML = fields.map(([l,v]) => `<div class="info-row"><span class="info-lbl">${l}</span><span class="info-val">${v}</span></div>`).join('');
+  mItems.innerHTML = (o.items||[]).map(([n,q]) => `<tr><td>${n}</td><td class="qty-c">${q}</td></tr>`).join('');
+  modal.scrollTop = 0;
+  mOv.classList.add('open');
+  document.body.style.overflow = 'hidden';
+}
+
+/* ── MODAL CLOSE (animated) ── */
+function closeModal() {
+  mOv.classList.add('closing');
+  setTimeout(() => {
+    mOv.classList.remove('open','closing');
+    document.body.style.overflow = '';
+  }, 290);
+}
+
+/* ── SWIPE TO CLOSE ── */
+(function() {
+  let startY = 0, curY = 0, dragging = false;
+  const m = document.getElementById('modal');
+  const handle = document.getElementById('mHandle');
+  function onStart(e) {
+    if (m.scrollTop > 0) return;
+    startY = e.touches ? e.touches[0].clientY : e.clientY;
+    curY = startY; dragging = true;
+    m.style.transition = 'none';
+  }
+  function onMove(e) {
+    if (!dragging) return;
+    curY = e.touches ? e.touches[0].clientY : e.clientY;
+    const dy = Math.max(0, curY - startY);
+    m.style.transform = `translateY(${dy}px)`;
+  }
+  function onEnd() {
+    if (!dragging) return; dragging = false;
+    const dy = Math.max(0, curY - startY);
+    m.style.transition = '';
+    if (dy > 100) { closeModal(); m.style.transform = ''; }
+    else { m.style.transform = ''; }
+  }
+  m.addEventListener('touchstart', onStart, {passive:true});
+  m.addEventListener('touchmove',  onMove,  {passive:true});
+  m.addEventListener('touchend',   onEnd);
+  handle.addEventListener('mousedown', onStart);
+  window.addEventListener('mousemove', onMove);
+  window.addEventListener('mouseup',   onEnd);
+})();
+
+/* ── BACK TO HOME (logo click) ── */
+document.getElementById('brandBtn').addEventListener('click', () => {
+  srchIn.value = ''; whSel.value = '';
+  activeStatus = null;
+  document.querySelectorAll('.fil-btn').forEach(b => b.classList.remove('active'));
+  filHint.textContent = 'показаны активные';
+  renderAll();
+  window.scrollTo({top:0, behavior:'smooth'});
+});
+
+/* ── NEXT CARD CLICK ── */
+document.getElementById('nxtCard').addEventListener('click', () => {
+  if (nextIdx >= 0) openModal(nextIdx);
+});
+document.getElementById('nxtCard').addEventListener('keydown', e => {
+  if ((e.key === 'Enter' || e.key === ' ') && nextIdx >= 0) { e.preventDefault(); openModal(nextIdx); }
+});
+
+/* ── CARD LIST CLICK (delegation) ── */
+document.getElementById('cardList').addEventListener('click', e => {
+  const card = e.target.closest('[data-idx]');
+  if (card) openModal(+card.dataset.idx);
+});
+
+/* ── OVERLAY CLICK ── */
+document.getElementById('mOv').addEventListener('click', e => {
+  if (e.target === mOv) closeModal();
+});
+document.getElementById('mCloseBtn').addEventListener('click', closeModal);
+
+/* ── FILTER BUTTONS ── */
+document.querySelectorAll('.fil-btn').forEach(btn => {
+  btn.addEventListener('click', () => toggleFilter(btn));
+});
+
+/* ── WAREHOUSE & SEARCH ── */
+document.getElementById('whSel').addEventListener('change', renderAll);
+document.getElementById('srchIn').addEventListener('input', renderAll);
+
+/* ── REFRESH ── */
+const rfshBtn = document.getElementById('rfshBtn');
+rfshBtn.addEventListener('click', () => loadData(true));
+
+/* ── CACHED REFS ── */
+const nxtTitle = document.getElementById('nxtTitle');
+const nxtMeta  = document.getElementById('nxtMeta');
+const nxtDays  = document.getElementById('nxtDays');
+const nxtWh    = document.getElementById('nxtWh');
+const nxtHint  = document.getElementById('nxtHint');
+const filHint  = document.getElementById('filHint');
+const cntBadge = document.getElementById('cntBadge');
+const cardList = document.getElementById('cardList');
+const archiveBanner = document.getElementById('archiveBanner');
+const updLine  = document.getElementById('updLine');
+const mOv      = document.getElementById('mOv');
+const modal    = document.getElementById('modal');
+const mId      = document.getElementById('mId');
+const mTitle   = document.getElementById('mTitle');
+const mStatus  = document.getElementById('mStatus');
+const mRows    = document.getElementById('mRows');
+const mItems   = document.getElementById('mItems');
+const whSel    = document.getElementById('whSel');
+const srchIn   = document.getElementById('srchIn');
+
+loadData();
+setInterval(() => loadData(false), 5 * 60 * 1000);
+</script>
+</body>
+</html>
