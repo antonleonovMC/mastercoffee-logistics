@@ -91,7 +91,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 .lst-ttl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txm)}
 .lst-cnt{font-size:11px;font-weight:700;background:var(--ac-dim);color:var(--ac);border-radius:20px;padding:2px 9px}
 
-/* SORT BUTTON — новый элемент */
+/* SORT BUTTON */
 .lst-hdr-left{display:flex;align-items:center;gap:8px}
 .sort-btn{display:flex;align-items:center;gap:4px;background:var(--sur);border:1.5px solid var(--bd);border-radius:20px;padding:4px 10px 4px 8px;font-family:'Manrope',sans-serif;font-size:10px;font-weight:700;color:var(--txs);cursor:pointer;transition:background .15s,border-color .15s,color .15s;white-space:nowrap;-webkit-tap-highlight-color:transparent}
 .sort-btn:active{transform:scale(.95)}
@@ -119,7 +119,6 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 .s-pill{font-size:10px;font-weight:700;border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0;margin-top:1px}
 .c-meta{display:flex;gap:5px;flex-wrap:wrap}
 .m-chip{display:flex;align-items:center;gap:3px;font-size:10.5px;color:var(--txs);background:var(--sur2);border-radius:6px;padding:3px 7px;font-weight:500}
-/* Чип «добавлено» */
 .m-chip.chip-added{background:rgba(41,123,137,.07);color:var(--ac)}
 .c-foot{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 9px;border-top:1px solid var(--bd);background:var(--sur2)}
 .c-supp{font-size:11px;font-weight:600;color:var(--txs)}
@@ -232,10 +231,8 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 
 <div class="lst-w">
   <div class="lst-hdr">
-    <!-- ① Левая группа: заголовок + кнопка сортировки -->
     <div class="lst-hdr-left">
       <span class="lst-ttl">Поставки</span>
-      <!-- ② Кнопка переключения направления сортировки -->
       <button class="sort-btn desc" id="sortBtn" title="Сортировка по дате добавления">
         <svg width="11" height="11" viewBox="0 0 12 12" fill="none" id="sortIcon">
           <path d="M2 2h8M2 5.5h5.5M2 9h3" stroke="currentColor" stroke-width="1.4" stroke-linecap="round"/>
@@ -251,7 +248,6 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
   <div class="upd-line" id="updLine"></div>
 </div>
 
-<!-- MODAL -->
 <div class="m-ov" id="mOv">
   <div class="modal" id="modal">
     <div class="m-handle" id="mHandle"></div>
@@ -291,37 +287,9 @@ const SC = {
   'Доставлен': {bg:'rgba(142,154,170,.12)',tx:'#7a8a9a',stripe:'#8e9aaa'},
 };
 
-// ③ createdAt добавлен во все записи — поле используется для сортировки
-const DEMO = [
-  {id:'001',group:'Зеленый кофе',warehouse:'Астана',supplier:'Green Coffee Trading',status:'В пути',
-   planDate:'2026-04-16',factDate:'',comment:'Срочная поставка',createdAt:'2026-04-01T09:15:00',
-   items:[['Арабика Ethiopia Yirgacheffe','200 кг'],['Арабика Colombia Huila','150 кг'],['Робуста Vietnam','100 кг']]},
-  {id:'002',group:'Упаковка',warehouse:'УК',supplier:'PackPro KZ',status:'В работе',
-   planDate:'2026-04-20',factDate:'',comment:'',createdAt:'2026-04-03T14:40:00',
-   items:[['Пакеты 250g с клапаном','5 000 шт'],['Пакеты 500g с клапаном','3 000 шт']]},
-  {id:'003',group:'Оборудование',warehouse:'Обжарочный цех',supplier:'Probat Systems GmbH',status:'Таможня',
-   planDate:'2026-04-22',factDate:'',comment:'Документы на таможне',createdAt:'2026-04-05T11:00:00',
-   items:[['Горелки Probat L25','2 шт'],['Запчасти к барабану','1 комплект']]},
-  {id:'004',group:'Зеленый кофе',warehouse:'Алматы',supplier:'Origin Direct Ltd',status:'Принят',
-   planDate:'2026-04-18',factDate:'',comment:'',createdAt:'2026-04-07T08:30:00',
-   items:[['Арабика Guatemala Antigua','300 кг'],['Арабика Kenya AA','120 кг']]},
-  {id:'005',group:'Химия',warehouse:'Склад С341/6',supplier:'CleanPro Solutions',status:'Оплачен',
-   planDate:'2026-04-25',factDate:'',comment:'Предоплата',createdAt:'2026-04-10T16:55:00',
-   items:[['Моющее Puly Caff 1kg','24 шт'],['Таблетки для очистки','100 шт']]},
-  {id:'006',group:'Зеленый кофе',warehouse:'Астана',supplier:'Green Coffee Trading',status:'Доставлен',
-   planDate:'2026-04-10',factDate:'2026-04-10',comment:'',createdAt:'2026-03-28T10:20:00',
-   items:[['Арабика Brazil Santos','500 кг']]},
-  {id:'007',group:'Оборудование',warehouse:'Алматы',supplier:'La Marzocco',status:'Доставлен',
-   planDate:'2026-04-05',factDate:'2026-04-06',comment:'',createdAt:'2026-03-22T13:10:00',
-   items:[['Кофемашина GB5','1 шт']]},
-];
-
 let orders = [], activeStatus = null, nextIdx = -1;
-
-// ④ Состояние сортировки: 'desc' = сначала новые, 'asc' = сначала старые
 let sortDir = 'desc';
 
-/* ── SORT BUTTON ── */
 const sortBtn = document.getElementById('sortBtn');
 sortBtn.addEventListener('click', () => {
   sortDir = sortDir === 'desc' ? 'asc' : 'desc';
@@ -330,14 +298,8 @@ sortBtn.addEventListener('click', () => {
   renderAll();
 });
 
-/* ── DATA ── */
 async function loadData(spin = false) {
   if (spin) rfshBtn.classList.add('spinning');
-  if (!SCRIPT_URL || SCRIPT_URL.includes('ВСТАВЬ')) {
-    orders = DEMO; renderAll();
-    updLine.textContent = '⚠️ Demo-режим — подключите Google Sheets';
-    rfshBtn.classList.remove('spinning'); return;
-  }
   try {
     const r = await fetch(SCRIPT_URL + '?t=' + Date.now());
     const d = await r.json();
@@ -350,7 +312,6 @@ async function loadData(spin = false) {
   } finally { rfshBtn.classList.remove('spinning'); }
 }
 
-/* ── FILTERS ── */
 function toggleFilter(btn) {
   const s = btn.dataset.s;
   if (activeStatus === s) {
@@ -366,7 +327,6 @@ function toggleFilter(btn) {
   renderAll();
 }
 
-/* ── COUNT PER STATUS ── */
 function updateCounts() {
   const wh = whSel.value, q = srchIn.value.toLowerCase().trim();
   ['Принят','В работе','Оплачен','В пути','Таможня','Доставлен'].forEach(s => {
@@ -384,8 +344,6 @@ function updateCounts() {
   });
 }
 
-// ⑤ Вспомогательная функция: получить timestamp для сортировки
-// Приоритет: createdAt → planDate → 0 (чтобы записи без дат шли в конец)
 function getSortTs(o) {
   if (o.createdAt) return new Date(o.createdAt).getTime();
   if (o.planDate)  return new Date(o.planDate).getTime();
@@ -405,16 +363,14 @@ function getFiltered() {
     return true;
   });
 
-  // ⑥ Сортировка по дате добавления (createdAt)
   filtered.sort((a, b) => {
-    const diff = getSortTs(b) - getSortTs(a); // desc по умолчанию
+    const diff = getSortTs(b) - getSortTs(a);
     return sortDir === 'desc' ? diff : -diff;
   });
 
   return filtered;
 }
 
-/* ── ARCHIVE BANNER ── */
 function updateArchiveBanner() {
   const wh = whSel.value, q = srchIn.value.toLowerCase().trim();
   const doneCount = orders.filter(o => {
@@ -442,7 +398,6 @@ function updateArchiveBanner() {
   }
 }
 
-/* ── NEXT CARD ── */
 function renderNext() {
   const wh = whSel.value;
   const cands = orders.filter(o => o.status !== 'Доставлен' && (wh ? o.warehouse === wh : true) && o.planDate)
@@ -469,7 +424,7 @@ function renderNext() {
   el.style.cursor = 'pointer';
 }
 
-/* ── RENDER ALL ── */
+/* ── RENDER ALL (Updated with Total Qty) ── */
 function renderAll() {
   renderNext();
   updateCounts();
@@ -482,7 +437,6 @@ function renderAll() {
   }
   const today = new Date(); today.setHours(0,0,0,0);
 
-  // ⑦ Форматирование даты добавления для чипа на карточке
   const fmtAdded = iso => {
     if (!iso) return null;
     const d = new Date(iso);
@@ -498,10 +452,25 @@ function renderAll() {
     const ul = diff === 0 ? '⚡ Сегодня' : diff === 1 ? '⚡ Завтра' : dl;
     const gi = orders.indexOf(o);
     const addedStr = fmtAdded(o.createdAt);
-    // ⑧ Чип «добавлено» показывается только если есть createdAt
+
+    // ПОДСЧЕТ ИТОГО
+    const totalQty = (o.items || []).reduce((sum, item) => {
+      const val = parseFloat(item[1].toString().replace(/\s/g, '').replace(',', '.'));
+      return sum + (isNaN(val) ? 0 : val);
+    }, 0);
+    const totalQtyFormatted = totalQty.toLocaleString('ru-RU');
+    
+    const qtyChip = `<div class="m-chip" style="background:var(--ac-dim);color:var(--ac);font-weight:700">
+      <svg width="10" height="10" viewBox="0 0 12 12" fill="none" style="margin-right:1px">
+        <path d="M1 3.5l5-2.5 5 2.5M1 3.5v5l5 2.5 5-2.5v-5M1 3.5l5 2.5 5-2.5M6 6v5" stroke="currentColor" stroke-width="1.2" stroke-linejoin="round"/>
+      </svg>
+      ${totalQtyFormatted}
+    </div>`;
+
     const addedChip = addedStr
       ? `<div class="m-chip chip-added"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><circle cx="6" cy="6" r="4.5" stroke="currentColor" stroke-width="1.2"/><path d="M6 4v2.5l1.5 1" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>добавлено ${addedStr}</div>`
       : '';
+
     return `<div class="card card-enter" style="animation-delay:${Math.min(i*0.04,.4)}s" data-idx="${gi}">
       <div class="c-stripe" style="background:${sc.stripe}"></div>
       <div class="c-body">
@@ -511,6 +480,7 @@ function renderAll() {
         </div>
         <div class="c-meta">
           <div class="m-chip"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><rect x="1" y="2" width="10" height="9" rx="1.5" stroke="currentColor" stroke-width="1.2"/><path d="M4 1v2M8 1v2M1 5h10" stroke="currentColor" stroke-width="1.2" stroke-linecap="round"/></svg>${dl}</div>
+          ${qtyChip}
           <div class="m-chip"><svg width="10" height="10" viewBox="0 0 12 12" fill="none"><path d="M6 1C4.34 1 3 2.34 3 4c0 2.25 3 7 3 7s3-4.75 3-7c0-1.66-1.34-3-3-3z" stroke="currentColor" stroke-width="1.2"/><circle cx="6" cy="4" r="1" fill="currentColor"/></svg>${o.warehouse}</div>
           ${addedChip}
         </div>
@@ -524,7 +494,6 @@ function renderAll() {
   cardList.innerHTML = html;
 }
 
-/* ── MODAL OPEN ── */
 function openModal(idx) {
   const o = orders[idx];
   if (!o) return;
@@ -551,7 +520,6 @@ function openModal(idx) {
   document.body.style.overflow = 'hidden';
 }
 
-/* ── MODAL CLOSE (animated) ── */
 function closeModal() {
   mOv.classList.add('closing');
   setTimeout(() => {
@@ -560,7 +528,6 @@ function closeModal() {
   }, 290);
 }
 
-/* ── SWIPE TO CLOSE ── */
 (function() {
   let startY = 0, curY = 0, dragging = false;
   const m = document.getElementById('modal');
@@ -592,7 +559,6 @@ function closeModal() {
   window.addEventListener('mouseup',   onEnd);
 })();
 
-/* ── BACK TO HOME (logo click) ── */
 document.getElementById('brandBtn').addEventListener('click', () => {
   srchIn.value = ''; whSel.value = '';
   activeStatus = null;
@@ -602,40 +568,22 @@ document.getElementById('brandBtn').addEventListener('click', () => {
   window.scrollTo({top:0, behavior:'smooth'});
 });
 
-/* ── NEXT CARD CLICK ── */
 document.getElementById('nxtCard').addEventListener('click', () => {
   if (nextIdx >= 0) openModal(nextIdx);
 });
-document.getElementById('nxtCard').addEventListener('keydown', e => {
-  if ((e.key === 'Enter' || e.key === ' ') && nextIdx >= 0) { e.preventDefault(); openModal(nextIdx); }
-});
-
-/* ── CARD LIST CLICK (delegation) ── */
 document.getElementById('cardList').addEventListener('click', e => {
   const card = e.target.closest('[data-idx]');
   if (card) openModal(+card.dataset.idx);
 });
-
-/* ── OVERLAY CLICK ── */
-document.getElementById('mOv').addEventListener('click', e => {
-  if (e.target === mOv) closeModal();
-});
+document.getElementById('mOv').addEventListener('click', e => { if (e.target === mOv) closeModal(); });
 document.getElementById('mCloseBtn').addEventListener('click', closeModal);
-
-/* ── FILTER BUTTONS ── */
-document.querySelectorAll('.fil-btn').forEach(btn => {
-  btn.addEventListener('click', () => toggleFilter(btn));
-});
-
-/* ── WAREHOUSE & SEARCH ── */
+document.querySelectorAll('.fil-btn').forEach(btn => { btn.addEventListener('click', () => toggleFilter(btn)); });
 document.getElementById('whSel').addEventListener('change', renderAll);
 document.getElementById('srchIn').addEventListener('input', renderAll);
 
-/* ── REFRESH ── */
 const rfshBtn = document.getElementById('rfshBtn');
 rfshBtn.addEventListener('click', () => loadData(true));
 
-/* ── CACHED REFS ── */
 const nxtTitle = document.getElementById('nxtTitle');
 const nxtMeta  = document.getElementById('nxtMeta');
 const nxtDays  = document.getElementById('nxtDays');
