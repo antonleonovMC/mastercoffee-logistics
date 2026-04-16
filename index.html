@@ -4,9 +4,9 @@
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0, maximum-scale=1.0, user-scalable=no">
     <title>Master Coffee — Логистика</title>
-
-    <link rel="icon" type="image/png" href="logo">
-    <link rel="apple-touch-icon" href="logo">
+    
+    <link rel="icon" type="image/png" href="logo.png">
+    <link rel="apple-touch-icon" href="logo.png">
     <meta name="theme-color" content="#297b89">
 
     <link rel="preconnect" href="https://fonts.googleapis.com">
@@ -14,102 +14,148 @@
     
     <style>
         :root {
-            --ac:      #297b89;
-            --ac-dk:   #1e6070;
-            --ac-lt:   #3a9aaa;
-            --ac-dim:  rgba(41,123,137,.10);
-            --ac-glow: rgba(41,123,137,.22);
-            --bg:      #f2f5f7;
-            --sur:     #ffffff;
-            --sur2:    #eef1f4;
-            --bd:      rgba(41,123,137,.12);
-            --tx:      #1a2430;
-            --txs:     #5a6a78;
-            --txm:     #9aaab8;
-            --r:       16px;
-            --rs:      10px;
-            --sh:      0 1px 3px rgba(0,0,0,.05),0 4px 20px rgba(41,123,137,.07);
+            --ac: #297b89; --ac-dk: #1e6070; --ac-dim: rgba(41,123,137,.10);
+            --bg: #f2f5f7; --sur: #ffffff; --sur2: #eef1f4; --bd: rgba(41,123,137,.12);
+            --tx: #1a2430; --txs: #5a6a78; --txm: #9aaab8; --r: 16px;
         }
-        *{box-sizing:border-box;margin:0;padding:0;-webkit-tap-highlight-color:transparent}
-        body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-height:100vh;padding-bottom:80px;font-size:14px;-webkit-font-smoothing:antialiased}
-
-        /* HEADER */
-        .hdr{background:var(--sur);border-bottom:1px solid var(--bd);padding:13px 16px 11px;position:sticky;top:0;z-index:100;box-shadow:0 1px 10px rgba(41,123,137,.08)}
-        .hdr-row{display:flex;align-items:center;justify-content:space-between;gap:10px}
-        .brand{display:flex;align-items:center;gap:9px;cursor:pointer;-webkit-tap-highlight-color:transparent;user-select:none}
-        .brand:active .logo-w{transform:scale(.92)}
-        .logo-w{width:34px;height:34px;background:#fff;border-radius:8px;display:flex;align-items:center;justify-content:center;overflow:hidden;flex-shrink:0;box-shadow:0 2px 8px rgba(41,123,137,.15);transition:transform .15s;border:1px solid var(--bd)}
-        .logo-w img{width:28px;height:28px;object-fit:contain}
-        .brand-text{display:flex;flex-direction:column;line-height:1}
-        .brand-name{font-family:'Playfair Display',serif;font-size:14.5px;font-weight:600;color:var(--ac);letter-spacing:.02em}
-        .brand-sub{font-size:9px;font-weight:700;color:var(--txm);letter-spacing:.14em;text-transform:uppercase;margin-top:2px}
+        * { box-sizing: border-box; margin: 0; padding: 0; -webkit-tap-highlight-color: transparent; }
+        body { font-family: 'Manrope', sans-serif; background: var(--bg); color: var(--tx); min-height: 100vh; padding-bottom: 80px; font-size: 14px; }
         
-        .wh-sel{appearance:none;background:var(--ac-dim);border:1px solid var(--bd);border-radius:20px;padding:6px 26px 6px 11px;font-family:'Manrope',sans-serif;font-size:11.5px;font-weight:700;color:var(--ac);cursor:pointer;background-image:url("data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' width='9' height='5'%3E%3Cpath d='M1 1l3.5 3L8 1' stroke='%23297b89' stroke-width='1.4' fill='none' stroke-linecap='round'/%3E%3C/svg%3E");background-repeat:no-repeat;background-position:right 9px center;max-width:140px;white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
-        .wh-sel:focus{outline:none}
+        .hdr { background: var(--sur); border-bottom: 1px solid var(--bd); padding: 12px 16px; position: sticky; top: 0; z-index: 100; box-shadow: 0 1px 10px rgba(41,123,137,.08); }
+        .hdr-row { display: flex; align-items: center; justify-content: space-between; }
+        .brand { display: flex; align-items: center; gap: 10px; }
+        .logo-w { width: 34px; height: 34px; background: #fff; border-radius: 8px; display: flex; align-items: center; justify-content: center; border: 1px solid var(--bd); overflow: hidden; }
+        .logo-w img { width: 100%; height: 100%; object-fit: contain; }
+        .brand-name { font-family: 'Playfair Display', serif; font-size: 15px; font-weight: 600; color: var(--ac); }
+        
+        .wh-sel { appearance: none; background: var(--ac-dim); border: 1px solid var(--bd); border-radius: 20px; padding: 6px 12px; font-size: 11px; font-weight: 700; color: var(--ac); }
+        .srch-w { padding: 12px 16px; }
+        .srch-in { width: 100%; background: var(--sur); border: 1px solid var(--bd); border-radius: 12px; padding: 10px 15px; font-size: 13px; outline: none; }
+        
+        .fil-w { padding: 0 16px 12px; }
+        .fil-grid { display: grid; grid-template-columns: repeat(3, 1fr); gap: 6px; }
+        .fil-btn { background: var(--sur); border: 1px solid var(--bd); border-radius: 8px; padding: 8px; font-size: 10px; font-weight: 600; color: var(--txs); cursor: pointer; text-align: center; }
+        .fil-btn.active { background: var(--ac); color: #fff; border-color: var(--ac); }
+        
+        .card { background: var(--sur); border-radius: 14px; margin: 0 16px 10px; border: 1px solid var(--bd); padding: 15px; cursor: pointer; }
+        .c-head { display: flex; justify-content: space-between; margin-bottom: 8px; }
+        .c-id { font-weight: 800; color: var(--ac); }
+        .s-pill { font-size: 10px; font-weight: 800; padding: 3px 8px; border-radius: 10px; background: var(--ac-dim); color: var(--ac); }
+        .c-supp { font-weight: 700; margin-bottom: 4px; }
+        .c-meta { font-size: 11px; color: var(--txs); }
+        
+        .m-ov { position: fixed; inset: 0; background: rgba(0,0,0,0.5); z-index: 200; display: none; align-items: flex-end; }
+        .m-ov.open { display: flex; }
+        .modal { background: #fff; width: 100%; border-radius: 20px 20px 0 0; padding: 20px; max-height: 80vh; overflow-y: auto; }
+        .m-close { width: 100%; padding: 12px; background: var(--ac); color: #fff; border: none; border-radius: 10px; margin-top: 15px; font-weight: 700; }
+        
+        .rfsh { position: fixed; bottom: 20px; right: 20px; width: 50px; height: 50px; background: var(--ac); border-radius: 50%; border: none; color: #fff; font-size: 20px; box-shadow: 0 4px 15px rgba(0,0,0,0.2); }
+    </style>
+</head>
+<body>
 
-        /* SEARCH */
-        .srch-w{padding:11px 16px 5px}
-        .srch-b{position:relative}
-        .srch-in{width:100%;background:var(--sur);border:1px solid var(--bd);border-radius:12px;padding:9px 13px 9px 36px;font-family:'Manrope',sans-serif;font-size:13px;color:var(--tx);transition:border .18s,box-shadow .18s}
-        .srch-in::placeholder{color:var(--txm)}
-        .srch-in:focus{outline:none;border-color:var(--ac);box-shadow:0 0 0 3px var(--ac-glow)}
+<header class="hdr">
+    <div class="hdr-row">
+        <div class="brand">
+            <div class="logo-w"><img src="logo.png" alt="L"></div>
+            <div class="brand-name">Master Coffee</div>
+        </div>
+        <select class="wh-sel" id="whSel">
+            <option value="">Все склады</option>
+            <option value="УК">УК</option>
+            <option value="Астана">Астана</option>
+            <option value="Алматы">Алматы</option>
+        </select>
+    </div>
+</header>
 
-        /* NEXT CARD */
-        .nxt-w{padding:13px 16px 2px}
-        .nxt-card{background:linear-gradient(135deg,var(--ac) 0%,var(--ac-dk) 100%);border-radius:var(--r);padding:15px 17px;color:#fff;position:relative;overflow:hidden;box-shadow:0 4px 222px rgba(41,123,137,.32);cursor:pointer;transition:transform .18s,box-shadow .18s;-webkit-tap-highlight-color:transparent}
-        .nxt-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(41,123,137,.4)}
-        .nxt-card:active{transform:scale(.97)}
-        .nxt-label{font-size:10px;font-weight:700;text-transform:uppercase;letter-spacing:0.1em;opacity:0.8;margin-bottom:4px}
+<div class="srch-w"><input type="text" class="srch-in" id="srchIn" placeholder="Поиск поставщика..."></div>
 
-        /* FILTERS */
-        .fil-w{padding:15px 16px 6px}
-        .fil-lbl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txm);margin-bottom:9px}
-        .fil-grid{display:grid;grid-template-columns:repeat(3,1fr);gap:6px}
-        .fil-btn{display:flex;align-items:center;gap:5px;background:var(--sur);border:1.5px solid var(--bd);border-radius:9px;padding:8px 9px;cursor:pointer;font-family:'Manrope',sans-serif;font-size:11px;font-weight:600;color:var(--txs);transition:background .15s,border-color .15s,color .15s;white-space:nowrap;overflow:hidden;position:relative}
-        .fil-btn .dot{width:7px;height:7px;border-radius:50%;flex-shrink:0}
-        .fil-btn .fil-count{margin-left:auto;font-size:10px;font-weight:700;background:var(--sur2);color:var(--txm);border-radius:20px;padding:1px 6px;flex-shrink:0;transition:background .15s,color .15s;min-width:18px;text-align:center}
-        .fil-btn.active{border-color:var(--btn-color);background:color-mix(in srgb,var(--btn-color) 10%,#fff);color:var(--btn-color)}
-        .s-accepted{--btn-color:#2da87a}.s-accepted .dot{background:#2da87a}
-        .s-working {--btn-color:#297b89}.s-working  .dot{background:#297b89}
-        .s-paid    {--btn-color:#6c63ff}.s-paid     .dot{background:#6c63ff}
-        .s-transit {--btn-color:#e8a020}.s-transit  .dot{background:#e8a020}
-        .s-customs {--btn-color:#e05c3a}.s-customs  .dot{background:#e05c3a}
-        .s-done    {--btn-color:#8e9aaa}.s-done     .dot{background:#8e9aaa}
+<div class="fil-w">
+    <div class="fil-grid" id="filterGrid">
+        <button class="fil-btn" data-s="Принят">Принят</button>
+        <button class="fil-btn" data-s="В работе">В работе</button>
+        <button class="fil-btn" data-s="В пути">В пути</button>
+    </div>
+</div>
 
-        /* LIST */
-        .lst-w{padding:6px 16px 0}
-        .lst-hdr{display:flex;align-items:center;justify-content:space-between;margin-bottom:9px}
-        .lst-ttl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txm)}
-        .lst-cnt{font-size:11px;font-weight:700;background:var(--ac-dim);color:var(--ac);border-radius:20px;padding:2px 9px}
+<div id="cardList"></div>
 
-        /* CARDS */
-        .card{background:var(--sur);border-radius:14px;margin-bottom:11px;box-shadow:0 2px 8px rgba(41,123,137,.08),0 1px 2px rgba(0,0,0,.04);border:1px solid var(--bd);overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s}
-        .card-enter{animation:cIn .32s cubic-bezier(.34,1.1,.64,1) both}
-        @keyframes cIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
-        .card:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(41,123,137,.14),0 2px 4px rgba(0,0,0,.06)}
-        .card:active{transform:scale(.983)}
-        .c-stripe{height:3px;width:100%}
-        .c-body{padding:15px 16px 13px}
-        .c-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
-        .c-id{font-size:13px;font-weight:700;color:var(--tx);line-height:1.3}
-        .c-id span{color:var(--ac)}
-        .s-pill{font-size:10px;font-weight:700;border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0}
-        .c-foot{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--bd);background:linear-gradient(to bottom,var(--sur),var(--sur2))}
-        .c-foot-left{display:flex;flex-direction:column;gap:5px}
-        .c-supp{font-size:11.5px;font-weight:600;color:var(--tx)}
-        .c-metrics{display:flex;gap:12px;align-items:center}
-        .c-qty{font-size:13px;font-weight:800;color:var(--ac);display:flex;align-items:center;gap:4px}
-        .c-date{font-size:11px;color:var(--txs);font-weight:700;display:flex;align-items:center;gap:3px}
-        .c-location{background:rgba(142,154,170,.12);color:var(--txs);font-size:10px;font-weight:600;padding:5px 10px;border-radius:8px;white-space:nowrap;text-align:center;align-self:center}
+<div class="m-ov" id="mOv">
+    <div class="modal">
+        <h2 id="mTitle"></h2>
+        <div id="mBody" style="margin-top:15px"></div>
+        <button class="m-close" onclick="closeModal()">Закрыть</button>
+    </div>
+</div>
 
-        /* MODAL */
-        .m-ov{position:fixed;inset:0;background:rgba(8,18,28,0);backdrop-filter:blur(0px);z-index:200;display:flex;align-items:flex-end;pointer-events:none;transition:background .25s,backdrop-filter .25s}
-        .m-ov.open{background:rgba(8,18,28,.45);backdrop-filter:blur(4px);pointer-events:all}
-        .modal{background:var(--sur);border-radius:22px 22px 0 0;width:100%;max-height:91vh;overflow-y:auto;transform:translateY(100%);transition:transform .32s cubic-bezier(.34,1.1,.64,1);touch-action:none}
-        .m-ov.open .modal{transform:translateY(0)}
-        .m-handle{width:36px;height:4px;background:var(--bd);border-radius:2px;margin:11px auto 0}
-        .m-hdr{padding:14px 18px 13px;border-bottom:1px solid var(--bd)}
-        .m-title{font-size:17px;font-weight:800;color:var(--tx);margin-bottom:7px}
-        .m-status{display:inline-flex;align-items:center;gap:6px;font-size:11.5px;font-weight:700;border-radius:20px;padding:4px 12px}
-        .m-body{padding:14px 18px}
-        .info-row{display:flex;align-items:flex-
+<button class="rfsh" onclick="loadData()">🔄</button>
+
+<script>
+const SCRIPT_URL = 'https://script.google.com/macros/s/AKfycbyYfKN9J2yTqWNC2Pz31tqr7GEN6ClrXcFGLtNT-8bT_ECrmoVeXKoueX8AeMvl5d0W-w/exec';
+let orders = [], activeStatus = null;
+
+async function loadData() {
+    document.getElementById('cardList').innerHTML = '<p style="text-align:center;padding:20px">Загрузка...</p>';
+    try {
+        const r = await fetch(SCRIPT_URL + '?t=' + Date.now());
+        const d = await r.json();
+        orders = d.orders || [];
+        render();
+    } catch(e) {
+        document.getElementById('cardList').innerHTML = '<p style="color:red;padding:20px">Ошибка связи с таблицей</p>';
+    }
+}
+
+function render() {
+    const q = document.getElementById('srchIn').value.toLowerCase();
+    const wh = document.getElementById('whSel').value;
+    
+    let filtered = orders.filter(o => {
+        if (activeStatus && o.status !== activeStatus) return false;
+        if (wh && o.warehouse !== wh) return false;
+        if (q && !o.supplier.toLowerCase().includes(q)) return false;
+        return true;
+    });
+
+    document.getElementById('cardList').innerHTML = filtered.map((o, i) => `
+        <div class="card" onclick="openModal(${orders.indexOf(o)})">
+            <div class="c-head">
+                <span class="c-id">#${o.id}</span>
+                <span class="s-pill">${o.status}</span>
+            </div>
+            <div class="c-supp">${o.supplier}</div>
+            <div class="c-meta">${o.warehouse} • ${o.group}</div>
+        </div>
+    `).join('');
+}
+
+function openModal(idx) {
+    const o = orders[idx];
+    document.getElementById('mTitle').innerText = 'Заявка #' + o.id;
+    document.getElementById('mBody').innerHTML = `
+        <p><b>Поставщик:</b> ${o.supplier}</p>
+        <p><b>Склад:</b> ${o.warehouse}</p>
+        <p><b>Статус:</b> ${o.status}</p>
+        <p><b>Комментарий:</b> ${o.comment || '—'}</p>
+    `;
+    document.getElementById('mOv').classList.add('open');
+}
+
+function closeModal() { document.getElementById('mOv').classList.remove('open'); }
+
+document.querySelectorAll('.fil-btn').forEach(btn => {
+    btn.onclick = () => {
+        activeStatus = activeStatus === btn.dataset.s ? null : btn.dataset.s;
+        document.querySelectorAll('.fil-btn').forEach(b => b.classList.toggle('active', b.dataset.s === activeStatus));
+        render();
+    };
+});
+
+document.getElementById('srchIn').oninput = render;
+document.getElementById('whSel').onchange = render;
+
+loadData();
+</script>
+</body>
+</html>
