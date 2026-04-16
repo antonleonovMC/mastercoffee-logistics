@@ -74,22 +74,27 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 .lst-ttl{font-size:10px;font-weight:700;letter-spacing:.12em;text-transform:uppercase;color:var(--txm)}
 .lst-cnt{font-size:11px;font-weight:700;background:var(--ac-dim);color:var(--ac);border-radius:20px;padding:2px 9px}
 
-/* CARDS */
-.card{background:var(--sur);border-radius:var(--r);margin-bottom:9px;box-shadow:var(--sh);border:1px solid var(--bd);overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s}
+/* CARDS - ОБНОВЛЁННЫЙ ДИЗАЙН */
+.card{background:var(--sur);border-radius:14px;margin-bottom:11px;box-shadow:0 2px 8px rgba(41,123,137,.08),0 1px 2px rgba(0,0,0,.04);border:1px solid var(--bd);overflow:hidden;cursor:pointer;transition:transform .18s,box-shadow .18s}
 .card-enter{animation:cIn .32s cubic-bezier(.34,1.1,.64,1) both}
 @keyframes cIn{from{opacity:0;transform:translateY(10px)}to{opacity:1;transform:translateY(0)}}
+.card:hover{transform:translateY(-1px);box-shadow:0 4px 14px rgba(41,123,137,.14),0 2px 4px rgba(0,0,0,.06)}
 .card:active{transform:scale(.983)}
 .c-stripe{height:3px;width:100%}
-.c-body{padding:12px 14px 10px}
-.c-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:7px}
-.c-id{font-size:12.5px;font-weight:700;color:var(--tx);line-height:1.3}
+.c-body{padding:15px 16px 13px}
+.c-head{display:flex;align-items:flex-start;justify-content:space-between;gap:8px;margin-bottom:10px}
+.c-id{font-size:13px;font-weight:700;color:var(--tx);line-height:1.3}
 .c-id span{color:var(--ac)}
 .s-pill{font-size:10px;font-weight:700;border-radius:20px;padding:3px 9px;white-space:nowrap;flex-shrink:0}
-.c-meta{display:flex;gap:5px;flex-wrap:wrap}
+.c-meta{display:flex;gap:6px;flex-wrap:wrap;margin-bottom:10px}
 .m-chip{display:flex;align-items:center;gap:3px;font-size:10.5px;color:var(--txs);background:var(--sur2);border-radius:6px;padding:3px 7px;font-weight:500}
-.c-foot{display:flex;align-items:center;justify-content:space-between;padding:8px 14px 9px;border-top:1px solid var(--bd);background:var(--sur2)}
-.c-supp{font-size:11px;font-weight:600;color:var(--txs)}
-.c-date{font-size:10.5px;color:var(--txm);font-weight:500}
+.c-foot{display:grid;grid-template-columns:1fr auto;gap:10px;align-items:center;padding:12px 16px;border-top:1px solid var(--bd);background:linear-gradient(to bottom,var(--sur),var(--sur2))}
+.c-foot-left{display:flex;flex-direction:column;gap:5px}
+.c-supp{font-size:11.5px;font-weight:600;color:var(--tx)}
+.c-metrics{display:flex;gap:12px;align-items:center}
+.c-qty{font-size:13px;font-weight:800;color:var(--ac);display:flex;align-items:center;gap:4px}
+.c-date{font-size:11px;color:var(--txs);font-weight:700;display:flex;align-items:center;gap:3px}
+.c-location{background:rgba(142,154,170,.12);color:var(--txs);font-size:10px;font-weight:600;padding:5px 10px;border-radius:8px;white-space:nowrap;text-align:center;align-self:center}
 .urgent{color:#e05c3a;font-weight:700}
 
 /* MODAL */
@@ -255,7 +260,7 @@ function renderAll() {
     document.getElementById('cnt-' + s).textContent = count;
   });
 
-  const filtered = orders.filter(o => {
+  let filtered = orders.filter(o => {
     if (!activeStatus && o.status === 'Доставлен') return false;
     if (activeStatus && o.status !== activeStatus) return false;
     if (wh && o.warehouse !== wh) return false;
@@ -264,6 +269,16 @@ function renderAll() {
         if (!content.includes(q)) return false;
     }
     return true;
+  });
+
+  // СОРТИРОВКА: НОВЫЕ СВЕРХУ (обратный хронологический порядок)
+  // Предполагается, что у заказов есть поле id, которое увеличивается для новых заказов
+  // Если есть поле dateCreated, можно сортировать по нему
+  filtered.sort((a, b) => {
+    // Сортировка по ID в обратном порядке (большие ID = новые заказы)
+    const idA = parseInt(a.id) || 0;
+    const idB = parseInt(b.id) || 0;
+    return idB - idA; // Обратная сортировка
   });
 
   cntBadge.textContent = filtered.length;
@@ -282,15 +297,16 @@ function renderAll() {
             <div class="c-id"><span>#${o.id}</span> — ${o.group}</div>
             <div class="s-pill" style="background:${sc.bg};color:${sc.tx}">${o.status}</div>
           </div>
-          <div class="c-meta">
-            <div class="m-chip">📅 ${displayDate}</div>
-            <div class="m-chip" style="background:var(--ac-dim);color:var(--ac);font-weight:700">📦 ${totalQty.toLocaleString('ru-RU')}</div>
-            <div class="m-chip">📍 ${o.warehouse}</div>
-          </div>
         </div>
         <div class="c-foot">
-          <span class="c-supp">${o.supplier}</span>
-          <span class="c-date">${displayDate}</span>
+          <div class="c-foot-left">
+            <div class="c-supp">${o.supplier}</div>
+            <div class="c-metrics">
+              <div class="c-qty">📦 ${totalQty.toLocaleString('ru-RU')}</div>
+              <div class="c-date">📅 ${displayDate}</div>
+            </div>
+          </div>
+          <div class="c-location">📍 ${o.warehouse}</div>
         </div>
       </div>
     `;
