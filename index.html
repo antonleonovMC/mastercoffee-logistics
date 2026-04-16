@@ -49,7 +49,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 
 /* NEXT CARD */
 .nxt-w{padding:13px 16px 2px}
-.nxt-card{background:linear-gradient(135deg,var(--ac) 0%,var(--ac-dk) 100%);border-radius:var(--r);padding:15px 17px;color:#fff;position:relative;overflow:hidden;box-shadow:0 4px 22px rgba(41,123,137,.32);cursor:pointer;transition:transform .18s,box-shadow .18s;-webkit-tap-highlight-color:transparent}
+.nxt-card{background:linear-gradient(135deg,var(--ac) 0%,var(--ac-dk) 100%);border-radius:var(--r);padding:15px 17px;color:#fff;position:relative;overflow:hidden;box-shadow:0 4px 222px rgba(41,123,137,.32);cursor:pointer;transition:transform .18s,box-shadow .18s;-webkit-tap-highlight-color:transparent}
 .nxt-card:hover{transform:translateY(-2px);box-shadow:0 8px 28px rgba(41,123,137,.4)}
 .nxt-card:active{transform:scale(.97)}
 
@@ -100,7 +100,7 @@ body{font-family:'Manrope',sans-serif;background:var(--bg);color:var(--tx);min-h
 /* MODAL */
 .m-ov{position:fixed;inset:0;background:rgba(8,18,28,0);backdrop-filter:blur(0px);z-index:200;display:flex;align-items:flex-end;pointer-events:none;transition:background .25s,backdrop-filter .25s}
 .m-ov.open{background:rgba(8,18,28,.45);backdrop-filter:blur(4px);pointer-events:all}
-.modal{background:var(--sur);border-radius:22px 22px 0 0;width:100%;max-height:91vh;overflow-y:auto;transform:translateY(100%);transition:transform .32s cubic-bezier(.34,1.1,.64,1)}
+.modal{background:var(--sur);border-radius:22px 22px 0 0;width:100%;max-height:91vh;overflow-y:auto;transform:translateY(100%);transition:transform .32s cubic-bezier(.34,1.1,.64,1);touch-action:none}
 .m-ov.open .modal{transform:translateY(0)}
 .m-handle{width:36px;height:4px;background:var(--bd);border-radius:2px;margin:11px auto 0}
 .m-hdr{padding:14px 18px 13px;border-bottom:1px solid var(--bd)}
@@ -217,11 +217,10 @@ const SC = {
 
 let orders = [], activeStatus = null;
 
-// Универсальная функция форматирования даты: День.Месяц.Год
 function formatDate(isoStr) {
   if (!isoStr) return '—';
   const d = new Date(isoStr);
-  if (isNaN(d.getTime())) return isoStr; // Если уже пришла строка типа "15.04.2024"
+  if (isNaN(d.getTime())) return isoStr;
   const day = String(d.getDate()).padStart(2, '0');
   const month = String(d.getMonth() + 1).padStart(2, '0');
   const year = d.getFullYear();
@@ -271,14 +270,10 @@ function renderAll() {
     return true;
   });
 
-  // СОРТИРОВКА: НОВЫЕ СВЕРХУ (обратный хронологический порядок)
-  // Предполагается, что у заказов есть поле id, которое увеличивается для новых заказов
-  // Если есть поле dateCreated, можно сортировать по нему
   filtered.sort((a, b) => {
-    // Сортировка по ID в обратном порядке (большие ID = новые заказы)
     const idA = parseInt(a.id) || 0;
     const idB = parseInt(b.id) || 0;
-    return idB - idA; // Обратная сортировка
+    return idB - idA;
   });
 
   cntBadge.textContent = filtered.length;
@@ -312,10 +307,18 @@ function renderAll() {
     `;
   }).join('');
 
-  const next = orders.filter(o => o.status !== 'Доставлен' && o.planDate).sort((a,b) => a.planDate.localeCompare(b.planDate))[0];
+  const activeOrders = orders.filter(o => o.status !== 'Доставлен' && o.planDate);
+  const next = activeOrders.sort((a,b) => new Date(a.planDate) - new Date(b.planDate))[0];
+  
   if (next) {
+      const gIndex = orders.indexOf(next);
       nxtTitle.textContent = next.supplier;
       nxtMeta.textContent = next.group + ' • ' + formatDate(next.planDate);
+      nxtCard.onclick = () => openModal(gIndex);
+  } else {
+      nxtTitle.textContent = "Нет активных поставок";
+      nxtMeta.textContent = "";
+      nxtCard.onclick = null;
   }
 }
 
@@ -356,11 +359,50 @@ function openModal(idx) {
   mItems.innerHTML = itemsHtml;
   mOv.classList.add('open');
   document.body.style.overflow = 'hidden';
+  resetSwipe();
 }
 
 function closeModal() {
   mOv.classList.remove('open');
   document.body.style.overflow = '';
+  modal.style.transform = '';
+}
+
+/* SWIPE LOGIC */
+let startY = 0, currentY = 0;
+modal.addEventListener('touchstart', e => {
+    if (modal.scrollTop <= 0) {
+        startY = e.touches[0].clientY;
+    } else {
+        startY = 0;
+    }
+}, {passive: true});
+
+modal.addEventListener('touchmove', e => {
+    if (startY === 0) return;
+    currentY = e.touches[0].clientY;
+    const diff = currentY - startY;
+    if (diff > 0) {
+        modal.style.transform = `translateY(${diff}px)`;
+        modal.style.transition = 'none';
+    }
+}, {passive: true});
+
+modal.addEventListener('touchend', e => {
+    if (startY === 0) return;
+    const diff = currentY - startY;
+    if (diff > 100) {
+        closeModal();
+    } else {
+        modal.style.transition = 'transform .32s cubic-bezier(.34,1.1,.64,1)';
+        modal.style.transform = 'translateY(0)';
+    }
+    startY = 0;
+});
+
+function resetSwipe() {
+    modal.style.transform = '';
+    modal.style.transition = '';
 }
 
 document.querySelectorAll('.fil-btn').forEach(btn => {
